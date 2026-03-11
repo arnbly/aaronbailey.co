@@ -641,8 +641,8 @@ section {
   transition: color 0.2s, border-color 0.2s;
 }
 .contact-link:hover {
-  color: var(--accent);
-  border-color: var(--accent);
+  color: var(--accent-hover);
+  border-color: var(--accent-hover);
 }
 
 /* ================================================================
