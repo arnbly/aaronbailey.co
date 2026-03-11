@@ -1,0 +1,38 @@
+---
+const principles = [
+  {
+    title: 'Build an extensible foundation.',
+    description:
+      'Solve the repeatable problems once with a strong system so you can spend your energy tackling the hard problems.',
+  },
+  {
+    title: 'Don\'t be too precious.',
+    description:
+      'Users only experience design solutions that ship.',
+  },
+  {
+    title: 'Think holistically, execute simply.',
+    description:
+      'Plan for how your work fits into the bigger picture, then design and ship incrementally.',
+  },
+  {
+    title: 'AI amplifies design.',
+    description:
+      'A prototype in someone\'s hands beats a thousand static mocks. Leveraging AI helps get us there faster.',
+  },
+];
+---
+
+<section id="philosophy">
+  <div class="container">
+    <span class="section-label">How I believe design creates impact.</span>
+    <ul class="philosophy-list">
+      {principles.map((p) => (
+        <li class="philosophy-item">
+          <h3 class="philosophy-principle">{p.title}</h3>
+          <p class="philosophy-desc">{p.description}</p>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

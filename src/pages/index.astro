@@ -1,0 +1,41 @@
+---
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import Work from '../components/Work.astro';
+import Philosophy from '../components/Philosophy.astro';
+import Companies from '../components/Companies.astro';
+import Writing from '../components/Writing.astro';
+import Contact from '../components/Contact.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Aaron Bailey is a product design director focused on craft, clarity, and the conditions that make great work possible." />
+    <meta property="og:title" content="Aaron Bailey — Product Design Director" />
+    <meta property="og:description" content="Founding designer at Tezi. Previously Wealthfront, Instacart, Thumbtack." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://aaronbailey.co" />
+    <meta property="og:image" content="https://aaronbailey.co/images/og%20image.png" />
+    <title>Aaron Bailey — Product Design Director</title>
+    <link rel="icon" type="image/svg+xml" href="/images/logo.svg" />
+  </head>
+  <body>
+    <Nav />
+    <div class="site-wrap">
+      <main>
+        <Hero />
+        <Work />
+        <Philosophy />
+        <Companies />
+        <Writing />
+        <Contact />
+      </main>
+      <Footer />
+    </div>
+  </body>
+</html>

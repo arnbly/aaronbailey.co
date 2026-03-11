@@ -1,0 +1,20 @@
+---
+const companies = [
+  { name: 'Tezi',        logo: '/images/logos/tezi.svg',        alt: 'Tezi' },
+  { name: 'Wealthfront', logo: '/images/logos/wealthfront.svg', alt: 'Wealthfront' },
+  { name: 'Instacart',   logo: '/images/logos/instacart.svg',   alt: 'Instacart' },
+  { name: 'Thumbtack',   logo: '/images/logos/thumbtack.svg',   alt: 'Thumbtack' },
+  { name: 'Earnest',     logo: '/images/logos/earnest.svg',     alt: 'Earnest' },
+];
+---
+
+<section class="companies-section">
+  <div class="container">
+    <p class="companies-label">Previously</p>
+    <div class="companies-logo-grid">
+      {companies.map((c) => (
+        <img src={c.logo} alt={c.alt} class="company-logo" />
+      ))}
+    </div>
+  </div>
+</section>

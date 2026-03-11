@@ -1,0 +1,180 @@
+---
+import { projects } from '../data/work.js';
+---
+
+<section id="work">
+  <div class="container">
+    <div class="work-header">
+      <span class="section-label">Selected Work</span>
+    </div>
+
+    <ul class="work-list">
+      {projects.filter((p) => !p.hidden).map((p) => (
+        <li
+          class="work-item"
+          data-project={p.id}
+          role="button"
+          tabindex="0"
+          aria-label={`View case study: ${p.company}`}
+        >
+          <span class="work-year">{p.year}</span>
+          <div class="work-item-title">{p.title}</div>
+          <div class="work-item-company">{p.company}</div>
+          <div class="work-item-role">{p.role}</div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<!-- Modal overlay — rendered once, populated by JS -->
+<div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal-panel" id="modal-panel">
+    <button class="modal-close" id="modal-close" aria-label="Close">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75">
+        <line x1="2" y1="2" x2="14" y2="14"/>
+        <line x1="14" y1="2" x2="2" y2="14"/>
+      </svg>
+    </button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<!-- Image lightbox — full-screen overlay for project images -->
+<div class="image-lightbox" id="image-lightbox" aria-hidden="true" role="dialog" aria-label="View image">
+  <img src="" alt="" id="lightbox-image">
+</div>
+
+<script define:vars={{ projects }}>
+  const overlay   = document.getElementById('modal-overlay');
+  const panel     = document.getElementById('modal-panel');
+  const closeBtn  = document.getElementById('modal-close');
+  const content   = document.getElementById('modal-content');
+  const lightbox  = document.getElementById('image-lightbox');
+  const lightboxImg = document.getElementById('lightbox-image');
+  let videoObserver = null;
+
+  function setupVideoPlayOnScroll() {
+    if (videoObserver) videoObserver.disconnect();
+    const videos = content.querySelectorAll('.modal-video');
+    if (videos.length === 0) return;
+    videoObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const video = entry.target;
+        if (entry.isIntersecting) video.play().catch(() => {});
+        else video.pause();
+      });
+    }, { root: overlay, threshold: 0.5 });
+    videos.forEach(v => videoObserver.observe(v));
+  }
+
+  function openLightbox(src) {
+    lightboxImg.src = src;
+    lightbox.classList.add('open');
+    lightbox.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove('open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    lightboxImg.src = '';
+  }
+
+  function openModal(id) {
+    const project = projects.find(p => p.id === id && !p.hidden);
+    if (!project) return;
+
+    const badgeHTML = project.badge
+      ? `<span class="work-badge" style="display:inline-block;margin-bottom:0.75rem">${project.badge}</span>`
+      : '';
+
+    const hasB = project.intro?.b?.trim();
+    const introHTML = project.intro ? `
+      <div class="modal-intro${!hasB ? ' modal-intro--no-b' : ''}">
+        <div class="modal-intro-col modal-intro-a"><p class="modal-intro-text">${project.intro.a}</p></div>
+        ${hasB ? `<div class="modal-intro-col modal-intro-b"><p class="modal-intro-text">${project.intro.b}</p></div>` : ''}
+      </div>
+    ` : '';
+
+    const sectionsHTML = project.sections.map(s => {
+      let mediaHTML = '';
+      if (s.video) {
+        mediaHTML = `<figure class="modal-section-image"><video class="modal-video" muted playsinline loop preload="metadata"><source src="${s.video}" type="video/mp4"></video></figure>`;
+      } else if (s.images && s.images.length) {
+        mediaHTML = `<div class="modal-section-images">${s.images.map(img => `<figure class="modal-section-image"><img class="modal-image" src="${img}" alt="" loading="lazy"></figure>`).join('')}</div>`;
+      } else if (s.image) {
+        mediaHTML = `<figure class="modal-section-image"><img class="modal-image" src="${s.image}" alt="" loading="lazy"></figure>`;
+      }
+      return `
+      <div>
+        ${s.heading ? `<h3 class="modal-section-heading">${s.heading}</h3>` : ''}
+        <p class="modal-section-body">${s.body}</p>
+        ${mediaHTML}
+      </div>
+    `;
+    }).join('');
+
+    content.innerHTML = `
+      ${badgeHTML}
+      <h2 class="modal-title" id="modal-title">${project.title}</h2>
+      ${project.cover ? `<div class="modal-cover"><img class="modal-image" src="${encodeURI(project.cover)}" alt=""></div>` : ''}
+      ${!project.intro ? `<div class="modal-meta">
+        <span class="modal-year"> Shipped - ${project.year}</span>
+        <p class="modal-company-badge"> Company - ${project.company}</p>
+        <p class="modal-role"> Role - ${project.role}</p>
+      </div>` : ''}
+      ${introHTML}
+      <div class="modal-sections">
+        ${sectionsHTML}
+      </div>
+      <div class="modal-footer">
+        Want to discuss this project in depth?
+        <a href="#contact" class="modal-contact-link">Get in touch →</a>
+      </div>
+    `;
+
+    overlay.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    closeBtn.focus();
+    requestAnimationFrame(() => setupVideoPlayOnScroll());
+  }
+
+  function closeModal() {
+    content.querySelectorAll('.modal-video').forEach(v => v.pause());
+    if (videoObserver) videoObserver.disconnect();
+    videoObserver = null;
+    overlay.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('.work-item').forEach(item => {
+    item.addEventListener('click', () => openModal(item.dataset.project));
+    item.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openModal(item.dataset.project);
+      }
+    });
+  });
+
+  closeBtn.addEventListener('click', closeModal);
+
+  overlay.addEventListener('click', (e) => {
+    if (e.target.classList.contains('modal-image')) openLightbox(e.target.src);
+    else if (!panel.contains(e.target)) closeModal();
+  });
+
+  lightbox.addEventListener('click', closeLightbox);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    if (lightbox.classList.contains('open')) closeLightbox();
+    else if (overlay.classList.contains('open')) closeModal();
+  });
+
+  document.addEventListener('click', (e) => {
+    if (e.target?.closest?.('.modal-contact-link')) {
+      closeModal();
+    }
+  });
+</script>

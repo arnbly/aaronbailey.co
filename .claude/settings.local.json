@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Control_Chrome__open_url",
+      "mcp__Control_Chrome__list_tabs",
+      "mcp__Control_Chrome__switch_to_tab",
+      "mcp__Control_Chrome__get_page_content",
+      "WebFetch(domain:www.alexandrafitzroy.com)",
+      "WebFetch(domain:himaniamoli.com)",
+      "WebFetch(domain:www.jasonjam.es)",
+      "WebFetch(domain:markomasnjak.com)",
+      "WebFetch(domain:rsms.me)",
+      "Bash(npm run build)",
+      "Bash(npm run:*)"
+    ]
+  }
+}
