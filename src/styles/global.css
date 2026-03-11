@@ -4,7 +4,7 @@
 
 @font-face {
   font-family: 'Atacama';
-  src: url('/fonts/Atacama VAR-VF.ttf') format('truetype');
+  src: url('/aaronbailey.co/fonts/Atacama VAR-VF.ttf') format('truetype');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
@@ -12,7 +12,7 @@
 
 @font-face {
   font-family: 'Neue Montreal';
-  src: url('/fonts/PPNeueMontreal-Medium.woff2') format('woff2');
+  src: url('/aaronbailey.co/fonts/PPNeueMontreal-Medium.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -20,7 +20,7 @@
 
 @font-face {
   font-family: 'Neue Montreal Regular';
-  src: url('/fonts/NeueMontreal-Regular.woff2') format('woff2');
+  src: url('/aaronbailey.co/fonts/NeueMontreal-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -679,7 +679,8 @@ section {
   .work-item-role { display: none; }
   
   .work-item-title { 
-    line-height: 1.2; 
+    line-height: 1.2;
+    font-size: 1.25rem;
   }
   
   .philosophy-list {
@@ -688,12 +689,16 @@ section {
   }
 
   .modal-panel {
-    padding: 2rem 1.5rem 3rem;
+    padding: 1.5rem 1rem 2rem;
   }
   .modal-intro {
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
+  .modal-sections { padding: 1rem 0 0; }
+  .modal-section-heading,
+  .modal-section-body { padding-left: 0; padding-right: 0; }
+  .footer { flex-direction: column; gap: 1rem; text-align: center; }
 }
 
 @media (max-width: 750px) {
@@ -705,14 +710,6 @@ section {
     align-items: center;
     justify-items: start;
   }
-}
-
-@media (max-width: 900px) {
-  .footer { flex-direction: column; gap: 1rem; text-align: center; }
-  .modal-panel { padding: 1.5rem 1rem 2rem; }
-  .modal-sections { padding: 1rem 0 0; }
-  .modal-section-heading,
-  .modal-section-body { padding-left: 0; padding-right: 0; }
 }
 
 @media (max-width: 480px) {
