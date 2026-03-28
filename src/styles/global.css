@@ -4,7 +4,7 @@
 
 @font-face {
   font-family: 'Atacama';
-  src: url('/aaronbailey.co/fonts/Atacama VAR-VF.ttf') format('truetype');
+  src: url('/fonts/Atacama VAR-VF.ttf') format('truetype');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
@@ -12,7 +12,7 @@
 
 @font-face {
   font-family: 'Neue Montreal';
-  src: url('/aaronbailey.co/fonts/PPNeueMontreal-Medium.woff2') format('woff2');
+  src: url('/fonts/PPNeueMontreal-Medium.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -20,7 +20,7 @@
 
 @font-face {
   font-family: 'Neue Montreal Regular';
-  src: url('/aaronbailey.co/fonts/NeueMontreal-Regular.woff2') format('woff2');
+  src: url('/fonts/NeueMontreal-Regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
