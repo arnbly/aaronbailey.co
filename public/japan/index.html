@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#F7F2EA">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Japan">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="/japan/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/japan/icon-180.png">
+<title>Japan · Nov–Dec 2026</title>
+<style>
+@font-face { font-family: "Neue Montreal"; src: url("/fonts/NeueMontreal-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Neue Montreal"; src: url("/fonts/PPNeueMontreal-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+:root {
+  --bg: #F7F2EA; --bg-subtle: #EFE8DB; --card: #FFFDF9;
+  --text: #1A1C24; --muted: #6F695F; --faint: #A39C93;
+  --accent: #B8935A; --accent-ink: #8A6A36; --border: #DDD5C8;
+  --booked: #2F6B4F; --reserve: #A4522F;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 400 16px/1.45 "Neue Montreal", -apple-system, system-ui, sans-serif; padding-bottom: env(safe-area-inset-bottom); }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+a { color: inherit; }
+
+header { position: sticky; top: 0; z-index: 10; background: rgba(247,242,234,.94); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: calc(env(safe-area-inset-top) + 10px) 16px 0; }
+.top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+h1 { font-size: 20px; font-weight: 500; margin: 0; letter-spacing: -0.01em; }
+.today-btn { font-size: 13px; color: var(--accent-ink); font-weight: 500; }
+.stay-row { display: flex; align-items: stretch; gap: 6px; margin: 10px -16px 0; padding: 0 16px 10px 0; }
+.stays { flex: 1; min-width: 0; display: flex; gap: 6px; overflow-x: auto; padding-left: 16px; scrollbar-width: none; }
+.stay.pin { flex: 0 0 auto; border-color: var(--reserve); color: var(--reserve); }
+.stay.pin span { color: var(--reserve); }
+.stay.pin[aria-pressed="true"] { background: var(--reserve); border-color: var(--reserve); color: #fff; }
+.stay.pin[aria-pressed="true"] span { color: #F3DDD2; }
+.views[hidden] { display: none; }
+.bk-group { margin-top: 18px; }
+.bk-group h2 { font-size: 13px; font-weight: 500; margin: 0 0 2px; color: var(--accent-ink); letter-spacing: .02em; }
+.bk-when { font-size: 12px; color: var(--faint); margin-top: 3px; }
+.bk-intro { font-size: 14px; color: var(--muted); padding-top: 14px; }
+.stays::-webkit-scrollbar { display: none; }
+.stay { flex: 0 0 auto; text-align: left; padding: 7px 12px; border: 1px solid var(--border); border-radius: 10px; background: transparent; }
+.stay b { display: block; font-weight: 500; font-size: 15px; }
+.stay span { display: block; font-size: 12px; color: var(--muted); }
+.stay[aria-pressed="true"] { background: var(--text); border-color: var(--text); color: var(--bg); }
+.stay[aria-pressed="true"] span { color: #CFC8BD; }
+.views { display: flex; border-top: 1px solid var(--border); margin: 0 -16px; }
+.view { flex: 1; padding: 11px 0; font-size: 14px; font-weight: 500; color: var(--muted); border-bottom: 2px solid transparent; }
+.view[aria-pressed="true"] { color: var(--text); border-bottom-color: var(--accent); }
+
+main { padding: 8px 16px 48px; max-width: 640px; margin: 0 auto; }
+
+/* Plan view */
+.day { border-bottom: 1px solid var(--border); scroll-margin-top: 150px; }
+.day-head { width: 100%; display: flex; align-items: baseline; gap: 12px; padding: 16px 0 14px; text-align: left; }
+.day-date { flex: 0 0 52px; font-size: 13px; color: var(--muted); line-height: 1.25; }
+.day-date b { display: block; font-size: 22px; color: var(--text); font-weight: 500; letter-spacing: -0.02em; }
+.day-title { flex: 1; font-size: 17px; font-weight: 500; }
+.day-title small { display: block; font-size: 12px; font-weight: 400; color: var(--accent-ink); letter-spacing: .04em; text-transform: uppercase; margin-bottom: 2px; }
+.chev { color: var(--faint); transition: transform .2s; font-size: 14px; }
+.day.open .chev { transform: rotate(90deg); }
+.day-body { display: none; padding: 0 0 18px 64px; }
+.day.open .day-body { display: block; }
+.travel { font-size: 14px; color: var(--muted); background: var(--bg-subtle); border-radius: 8px; padding: 9px 11px; margin-bottom: 14px; }
+.tod { margin-top: 14px; }
+.tod:first-child { margin-top: 0; }
+.tod h3 { margin: 0 0 4px; font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; color: var(--faint); }
+.item { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-top: 1px solid rgba(221,213,200,.6); }
+.tod h3 + .item { border-top: 0; }
+.item-main { flex: 1; min-width: 0; }
+.item-name { font-weight: 500; font-size: 15px; }
+.item-d { font-size: 14px; color: var(--muted); margin-top: 2px; }
+.tag { display: inline-block; font-size: 11px; font-weight: 500; letter-spacing: .03em; padding: 1px 7px; border-radius: 99px; margin-left: 6px; vertical-align: 1px; border: 1px solid currentColor; }
+.tag.booked { color: var(--booked); }
+.tag.reserve { color: var(--reserve); }
+.tag.optional { color: var(--faint); }
+.src { display: inline-block; font-size: 10px; font-weight: 500; letter-spacing: .09em; text-transform: uppercase; margin-bottom: 1px; }
+.src.sug { color: var(--accent-ink); }
+.item.is-sug { box-shadow: inset 2px 0 0 var(--accent); padding-left: 10px; margin-left: -12px; }
+.wx { display: block; font-size: 13px; font-weight: 400; color: var(--muted); margin-top: 3px; }
+.wx .rain { color: #3C6E91; }
+.emo { display: inline-block; width: 1.5em; margin-left: -1.5em; text-align: left; }
+.day-body .item-main, .bk-group .item-main { padding-left: 1.5em; }
+.item-note { font-size: 13px; color: var(--accent-ink); margin-top: 2px; }
+.item-dist { font-size: 12px; color: var(--faint); margin-top: 3px; }
+.go { flex: 0 0 auto; font-size: 13px; font-weight: 500; color: var(--accent-ink); text-decoration: none; padding: 4px 10px; border: 1px solid var(--border); border-radius: 99px; background: var(--card); margin-top: 1px; }
+.go:active { background: var(--bg-subtle); }
+.today-pill { font-size: 11px; font-weight: 500; background: var(--accent); color: #fff; border-radius: 99px; padding: 2px 8px; margin-left: 8px; vertical-align: 2px; letter-spacing: .03em; }
+
+/* Nearby view */
+.chips { display: flex; gap: 6px; overflow-x: auto; padding: 12px 0 4px; scrollbar-width: none; }
+.chips::-webkit-scrollbar { display: none; }
+.chip { flex: 0 0 auto; font-size: 14px; padding: 6px 13px; border-radius: 99px; border: 1px solid var(--border); }
+.chip[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+.area { margin-top: 18px; }
+.area h2 { font-size: 13px; font-weight: 500; margin: 0 0 2px; color: var(--accent-ink); letter-spacing: .02em; }
+.cat { font-size: 11px; color: var(--faint); text-transform: uppercase; letter-spacing: .08em; margin-left: 6px; }
+.empty { color: var(--muted); padding: 32px 0; text-align: center; font-size: 15px; }
+.foot { margin-top: 32px; font-size: 12px; color: var(--faint); text-align: center; }
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <h1>Japan</h1>
+    <button class="today-btn" id="todayBtn" hidden>Jump to today</button>
+  </div>
+  <div class="stay-row">
+    <nav class="stays" id="stays" aria-label="Stay"></nav>
+    <button class="stay pin" id="bookTab" data-stay="booking"></button>
+  </div>
+  <div class="views" role="group" aria-label="View">
+    <button class="view" data-view="plan" aria-pressed="true">Day by day</button>
+    <button class="view" data-view="nearby" aria-pressed="false">Nearby</button>
+  </div>
+</header>
+<main id="main"></main>
+
+<script>
+window.STAYS = [
+  { id: "tokyo1", label: "Tokyo", sub: "Ueno · Nov 26–27", city: "tokyo", hotel: "ueno",
+    areas: ["Ueno + Hongo", "Asakusa + Kappabashi", "Jimbocho + Kanda", "Ginza + Marunouchi", "Shibuya (near hotel)", "Harajuku + Aoyama", "Tomigaya (Yoyogi Park)", "Ebisu + Daikanyama + Nakameguro", "Shimokitazawa", "Shinjuku", "Elsewhere in Tokyo", "Location to confirm"] },
+  { id: "kyoto", label: "Kyoto", sub: "Nov 28 – Dec 3", city: "kyoto", hotel: "kyoto",
+    areas: ["Downtown (near hotel)", "Gion + Higashiyama", "Okazaki + Philosopher's Path", "Kyoto Station + south", "Arashiyama", "Elsewhere in Kyoto"] },
+  { id: "kanazawa", label: "Kanazawa", sub: "Dec 4–6", city: "kanazawa", areas: [] },
+  { id: "tokyo2", label: "Tokyo", sub: "Shibuya · Dec 7–11", city: "tokyo", hotel: "shibuya",
+    areas: ["Shibuya (near hotel)", "Harajuku + Aoyama", "Tomigaya (Yoyogi Park)", "Ebisu + Daikanyama + Nakameguro", "Shimokitazawa", "Shinjuku", "Ginza + Marunouchi", "Jimbocho + Kanda", "Asakusa + Kappabashi", "Ueno + Hongo", "Elsewhere in Tokyo", "Location to confirm"] }
+];
+
+// s: "sug" marks items added from the saved lists. Everything else is from the original itinerary.
+window.DAYS = [
+  { date: "2026-11-26", stay: "tokyo1", title: "Arrive Tokyo",
+    travel: "Land at Narita 12:45. Keisei Skyliner to Keisei-Ueno, about 45 min, ¥2,580, every 20 min.",
+    morning: [ { n: "Clear immigration", e: "🛂" } ],
+    afternoon: [
+      { n: "Check in: Dormy Inn Ueno Okachimachi", e: "🏨", d: "6-7-22 Ueno, Taito City, Tokyo 110-0005 · 東京都台東区上野6-7-22. 5 min walk from Keisei-Ueno.", q: "東京都台東区上野6-7-22", tag: "booked" },
+      { n: "Ueno Park + Shinobazu Pond", e: "🌳", d: "Tokyo's big museum park. Shinobazu Pond has a temple on an island and lotus beds. Sunset around 16:30.", q: "Shinobazu Pond, Ueno, Tokyo" },
+      { n: "Kappabashi kitchen street", e: "🛍️", d: "Tokyo's kitchen supply street: knives, ceramics, brushes and plastic food samples. Saved shops: Kanaya Brush, Tokyo Biken (knives), Hashitou (chopsticks). Shops close around 17:00, so only if you land on time.", q: "Kappabashi Kitchen Street, Tokyo", s: "sug" }
+    ],
+    evening: [
+      { n: "Ameyoko", e: "🍽️", d: "Busy market street under the train tracks, with food stalls and standing bars. Early dinner, 1 min from the hotel.", q: "Ameyoko Shopping Street, Ueno, Tokyo" },
+      { n: "Hotel bath + sauna", e: "♨️", d: "Top-floor bath, sauna and cold plunge. Free late-night soba." },
+      { n: "Senso-ji at night", e: "🛕", d: "Tokyo's oldest temple, founded in 645. After dark the crowds thin out and the main hall and five-story pagoda are lit up. 8 min on the Ginza line. Grounds open 24h, lit until 23:00. Main hall closes at 17:00.", q: "Senso-ji, Asakusa, Tokyo", tag: "optional" },
+      { n: "If in Asakusa, eat there", e: "🍽️", d: "Asakusa Monja Zenya (monjayaki), Wagyu Sukiyaki Goku by Kaminarimon, or Asakusa Menchi (must try, check closing time).", q: "Asakusa Monja Zenya, Tokyo", s: "sug" }
+    ] },
+
+  { date: "2026-11-27", stay: "tokyo1", title: "National Museum, Rikugien",
+    morning: [ { n: "Kappabashi kitchen street", e: "🛍️", d: "Tokyo's kitchen supply street: knives, ceramics, brushes and plastic food samples. About 15 min walk from the hotel. Saved shops: Kanaya Brush, Tokyo Biken (knives), Hashitou (chopsticks). Most shops open around 10:00.", q: "Kappabashi Kitchen Street, Tokyo", tag: "optional" } ],
+    afternoon: [ { n: "Tokyo National Museum", e: "🏛️", d: "Japan's largest collection of Japanese art. Honkan covers ceramics, swords and screens; Toyokan covers the rest of Asia. 15 to 18 min walk through the park, 2 to 3 hrs. Open until 20:00 some Fridays.", q: "Tokyo National Museum" } ],
+    evening: [
+      { n: "Dinner near Komagome Station", e: "🍽️", d: "Before Rikugien." },
+      { n: "Rikugien illumination", e: "🌳", d: "Edo-period stroll garden built around a pond, with the maples lit up at night. Okachimachi to Komagome on the Yamanote, about 11 min. Main gate is 7 to 8 min from the station. 18:00 to 20:30, last entry 19:30.", q: "Rikugien Main Gate, Tokyo", tag: "booked" },
+      { n: "Or dinner after: Yakiniku Jumbo Hanare", e: "🍽️", d: "Komagome to Todaimae on the Namboku line, short walk. About 20 min on foot back to the hotel.", q: "Yakiniku Jumbo Hanare, 3-27-9 Hongo, Bunkyo, Tokyo", tag: "reserve", s: "sug" }
+    ] },
+
+  { date: "2026-11-28", stay: "kyoto", title: "To Kyoto",
+    travel: "Okachimachi to Tokyo Station, 2 stops, about 8 min. Leave the hotel by 11:45.",
+    morning: [
+      { n: "Check out, free morning in Ueno", e: "🧳" },
+      { n: "Kappabashi kitchen street", e: "🛍️", d: "Tokyo's kitchen supply street: knives, ceramics, brushes and plastic food samples. If you skipped it Thursday. Shops open around 10:00.", q: "Kappabashi Kitchen Street, Tokyo", s: "sug" }
+    ],
+    afternoon: [
+      { n: "Nozomi 33 · Tokyo 12:30 → Kyoto 14:44", e: "🚄", d: "Green car. Car 9, seats 3-C and 3-D. Smart EX.", tag: "booked" },
+      { n: "Check in: Kyoto hotel", e: "🏨", d: "245-2 Kurumayacho, Nakagyo-ku, Kyoto · 京都府京都市中京区車屋町245-2.", q: "京都府京都市中京区車屋町245-2", tag: "booked" },
+      { n: "Nishiki Market + Weekenders Coffee", e: "🍽️", d: "Narrow covered market street, 400 years old, with pickles, tofu, knives and street snacks. Many stalls close around 17:00, so go soon after check-in. Weekenders is a small specialty roaster nearby.", q: "Nishiki Market, Kyoto" },
+      { n: "Shops near the market", e: "🛍️", d: "D&DEPARTMENT Kyoto (inside Bukko-ji), Kyukyodo (incense and paper), Nomura Tailor (fabric).", q: "D&DEPARTMENT KYOTO", s: "sug" }
+    ],
+    evening: [
+      { n: "Kamo River at dusk", e: "🚶", d: "The river through central Kyoto. Walk the banks between Shijo and Sanjo bridges as the lights come on.", q: "Kamo River, Shijo, Kyoto" },
+      { n: "Kiyomizu-dera evening illumination", e: "🛕", d: "Hillside temple with a huge wooden stage over the trees. In autumn it opens at night with the maples lit up.", q: "Kiyomizu-dera, Kyoto", tag: "optional" },
+      { n: "If at Kiyomizu, eat in Gion", e: "🍽️", d: "Gion Duck Noodles, Gyoza Hohei, or Gion Tanto (okonomiyaki).", q: "Gion Duck Noodles, Kyoto", s: "sug" },
+      { n: "Otherwise dinner: Katsukura", e: "🍽️", d: "Tonkatsu, walk-in, near the hotel.", q: "Katsukura Shijo Higashinotoin, Kyoto", s: "sug" },
+      { n: "Drinks on Kiyamachi", e: "🍸", d: "L'Escamoteur, The Common One Bar, Jam House.", q: "L'Escamoteur, Kyoto", s: "sug" }
+    ] },
+
+  { date: "2026-11-29", stay: "kyoto", title: "Nara day trip",
+    travel: "Kintetsu from Kyoto Station, about 45 min each way.",
+    morning: [ { n: "Todai-ji + the Daibutsu", e: "🛕", d: "One of the world's largest wooden buildings, housing a 15 m bronze Buddha from the 700s.", q: "Todai-ji, Nara" } ],
+    afternoon: [
+      { n: "Kasuga Taisha lantern approach", e: "⛩️", d: "Nara's main shrine. The forest path up to it is lined with about 2,000 stone lanterns, and the halls hang with bronze ones.", q: "Kasuga Taisha, Nara" },
+      { n: "Nara Park deer", e: "🦌", d: "Over 1,000 free-roaming deer, considered sacred messengers. They bow for crackers. Shika senbei about ¥200.", q: "Nara Park" }
+    ],
+    evening: [
+      { n: "Back to Kyoto", e: "🚃" },
+      { n: "Dinner near the hotel", e: "🍽️", d: "Yakinikuya Masuichi (reserve) or Wajoryomen Sugari (tsukemen).", q: "Yakinikuya Masuichi SakaiNishiki, Kyoto", s: "sug" }
+    ] },
+
+  { date: "2026-11-30", stay: "kyoto", title: "Tofuku-ji to Fushimi Inari",
+    morning: [ { n: "Tofuku-ji near opening", e: "🛕", d: "Zen temple famous for its maple valley, seen from the wooden Tsutenkyo bridge. Go at opening, around 8:00, before the crowds.", q: "Tofuku-ji, Kyoto" } ],
+    afternoon: [
+      { n: "Sanjusangen-do", e: "🛕", d: "A 120 m temple hall holding 1,001 life-size gilded Kannon statues standing in rows.", q: "Sanjusangen-do, Kyoto" },
+      { n: "Gojozaka pottery quarter", e: "🛍️", d: "Kyoto's old pottery neighborhood. Walk up to Kawai Kanjiro's House, the home and kiln of a leading folk-craft potter. Buy here if buying at all.", q: "Kawai Kanjiro's House, Kyoto" },
+      { n: "Kenninji", e: "🛕", d: "Kyoto's oldest Zen temple, with a twin-dragon ceiling painting and raked gardens. About 15 min north of Gojozaka. Closes 16:30.", q: "Kenninji Temple, Kyoto", s: "sug" }
+    ],
+    evening: [
+      { n: "Fushimi Inari, late afternoon", e: "⛩️", d: "Shrine with thousands of orange torii gates winding up the mountain. Fewer people late in the day. Open 24/7.", q: "Fushimi Inari Taisha, Kyoto" },
+      { n: "Dinner: Koyori", e: "🍽️", d: "Near Kiyomizu-dera.", q: "Koyori Kyoto Kiyomizu" }
+    ] },
+
+  { date: "2026-12-01", stay: "kyoto", title: "Northern Higashiyama",
+    morning: [ { n: "Guided private walk", e: "🚶", d: "Ask for history and architecture.", tag: "reserve" } ],
+    afternoon: [
+      { n: "Ginkaku-ji", e: "🛕", d: "The Silver Pavilion. A shogun's retreat turned Zen temple, with a raked sand garden and a moss garden climbing the hillside. Despite the name, it was never covered in silver.", q: "Ginkaku-ji, Kyoto" },
+      { n: "Philosopher's Path + Honen-in", e: "🚶", d: "Stone path along a canal, about 2 km from Ginkaku-ji south toward Nanzen-ji. Honen-in is a quiet temple just off the path, with a thatched gate and raked sand mounds at the entrance.", q: "Philosopher's Path, Kyoto" },
+      { n: "Eikan-do + Nanzen-ji", e: "🛕", d: "Eikan-do is one of Kyoto's best temples for autumn color. Nanzen-ji is a large Zen temple next door with a brick aqueduct running through the grounds.", q: "Eikando, Kyoto" },
+      { n: "Lunch: yudofu at Okutan", e: "🍽️", d: "Simmered tofu set lunch in a garden setting by Nanzen-ji. Restaurant open since the 1600s.", q: "Okutan Nanzenji, Kyoto" },
+      { n: "Lunch alternative: Juugo", e: "🍽️", d: "Handmade soba at the top of the Philosopher's Path. Woven for coffee in Okazaki.", q: "Juugo soba, Kyoto", s: "sug" }
+    ],
+    evening: [
+      { n: "Free", e: "🛋️", d: "Shorten this day if the week is running heavy." },
+      { n: "Dinner: Ootake", e: "🍽️", d: "Hamburg steak in Okazaki. Two addresses on the list, confirm before walking.", q: "肉洋食オオタケ 京都", s: "sug" }
+    ] },
+
+  { date: "2026-12-02", stay: "kyoto", title: "Arashiyama + Saiho-ji",
+    morning: [
+      { n: "Bamboo grove, early", e: "🎋", d: "Path through tall bamboo. Crowded by mid-morning, so go first thing.", q: "Arashiyama Bamboo Forest, Kyoto" },
+      { n: "Tenryu-ji Sogenchi garden", e: "🛕", d: "Zen temple whose pond garden dates to the 1300s, with the hills behind it as part of the view.", q: "Tenryu-ji, Kyoto" },
+      { n: "Okochi Sanso", e: "🌳", d: "Hillside villa and garden built by silent-film actor Denjiro Okochi, above the bamboo grove. Matcha and a sweet are included with entry. Views over Kyoto and the Arashiyama hills.", q: "Okochi Sanso, Kyoto" },
+      { n: "Jojakko-ji", e: "🛕", d: "Hillside temple with mossy stone steps under maples, one of Arashiyama's best spots for autumn color. 10 min walk from Okochi Sanso.", q: "Jojakko-ji, Kyoto", s: "sug" }
+    ],
+    afternoon: [
+      { n: "Lunch: shojin ryori at Shigetsu", e: "🍽️", d: "Buddhist vegetarian set meal served inside Tenryu-ji.", q: "Shigetsu, Tenryu-ji, Kyoto" },
+      { n: "Lunch alternative: Shoraian", e: "🍽️", d: "Tofu course by the river.", q: "Shoraian, Arashiyama, Kyoto", s: "sug" },
+      { n: "Saiho-ji (Kokedera)", e: "🛕", d: "The moss temple: a garden carpeted in over 100 kinds of moss. Visits are by reservation only and start with 1 hr of sutra copying.", q: "Saiho-ji, Kyoto", tag: "reserve" }
+    ],
+    evening: [
+      { n: "Back to Kyoto", e: "🚃" },
+      { n: "Dinner near the hotel", e: "🍽️", d: "Kanegura or Ibushigin Kazuya (izakaya).", q: "KANEGURA, Kyoto", s: "sug" }
+    ] },
+
+  { date: "2026-12-03", stay: "kyoto", title: "Himeji day trip",
+    travel: "Sanyo Shinkansen, about 45 min each way. ¥4,740 unreserved per leg. Take the 9:43 or 10:43 Hikari.",
+    morning: [ { n: "Walk up Otemae-dori", e: "🚶", d: "The main avenue from the station, with the castle at the end. 15 to 20 min.", q: "Himeji Station" } ],
+    afternoon: [
+      { n: "Himeji Castle", e: "🏯", d: "Japan's best-preserved original castle, white-walled and nicknamed the White Heron. 9:00 to 17:00, last admission 16:00. Buy the combined ticket with Koko-en (¥2,600). Shoes off, 6 floors of steep stairs.", q: "Himeji Castle" },
+      { n: "Koko-en", e: "🌳", d: "Nine walled Japanese gardens beside the castle. Last entry 16:30.", q: "Koko-en Garden, Himeji" }
+    ],
+    evening: [
+      { n: "Train back to Kyoto", e: "🚄" },
+      { n: "Dinner: Honke Daiichi-Asahi", e: "🍽️", d: "Ramen a few min from the Kyoto shinkansen gates.", q: "Honke Daiichi-Asahi, Kyoto", s: "sug" }
+    ] },
+
+  { date: "2026-12-04", stay: "kanazawa", title: "Raku Museum, then Kanazawa",
+    travel: "Thunderbird Kyoto to Tsuruga, about 50 min. Change to the Hokuriku Shinkansen to Kanazawa, about 45 min.",
+    morning: [ { n: "Raku Museum", e: "🏛️", d: "Tea bowls made by the Raku family, who have been making them for 16 generations. 10:00 to 16:30. 11 min from Imadegawa (Karasuma line). About 1 hr. Out by 11:15.", q: "Raku Museum, Kyoto" } ],
+    afternoon: [ { n: "Kurasu coffee", e: "☕", d: "Near Kyoto Station, then the train.", q: "Kurasu Kyoto Stand" } ],
+    evening: [
+      { n: "Check in: Onyado Nono Kanazawa (御宿 野乃金沢)", e: "🏨", d: "1-1 Shimotsutsumicho, Kanazawa 920-0917 · 石川県金沢市下堤町1-1.", q: "御宿 野乃金沢", tag: "booked" },
+      { n: "National Crafts Museum or Ishikawa Prefectural Museum of Art", e: "🏛️", d: "The National Crafts Museum shows Japanese ceramics, lacquer, textiles and metalwork. The Prefectural Museum covers Kaga-region art and Kutani porcelain. Both open Friday, last entry 17:00.", q: "National Crafts Museum, Kanazawa" }
+    ] },
+
+  { date: "2026-12-05", stay: "kanazawa", title: "Kanazawa",
+    morning: [ { n: "Kanazawa Castle Park + Kenrokuen", e: "🌳", d: "Kenrokuen is one of Japan's top three gardens. In winter the pines are tied with yukitsuri, cone-shaped rope supports against snow. The castle park sits next door. Combined ticket ¥500, linked by underpass. Paid buildings last entry 16:00.", q: "Kenrokuen, Kanazawa" } ],
+    afternoon: [
+      { n: "Ohi Museum", e: "🏛️", d: "Ohi pottery, made by the same family of tea-bowl makers since the 1600s.", q: "Ohi Museum, Kanazawa" },
+      { n: "21st Century Museum", e: "🎨", d: "Contemporary art museum in a round glass building. Known for Leandro Erlich's Swimming Pool installation.", q: "21st Century Museum of Contemporary Art, Kanazawa" }
+    ],
+    evening: [
+      { n: "Higashi Chaya + Nagamachi", e: "🚶", d: "Higashi Chaya is a preserved geisha teahouse district of wooden facades. Nagamachi is the old samurai quarter, with earthen walls and canals.", q: "Higashi Chaya District, Kanazawa" },
+      { n: "Omakase dinner", e: "🍽️", d: "Sushi counter.", tag: "reserve" }
+    ] },
+
+  { date: "2026-12-06", stay: "kanazawa", title: "Kaga Onsen",
+    travel: "Kanazawa to Kaga Onsen, about 25 min, then the shuttle to Yamanaka.",
+    morning: [ { n: "Anything missed in Kanazawa", e: "🚶" } ],
+    afternoon: [ { n: "Omicho Market lunch", e: "🍽️", d: "Kanazawa's main fish and produce market. Seafood rice bowls for lunch. Then the train.", q: "Omicho Market, Kanazawa" } ],
+    evening: [ { n: "Check in 13:00: Kayotei (かよう亭)", e: "♨️", d: "Ryokan in Yamanaka Onsen, Kaga. Baths, then crab kaiseki. Rest evening.", q: "Kayotei, Yamanaka Onsen, Kaga", tag: "booked" } ] },
+
+  { date: "2026-12-07", stay: "tokyo2", title: "Back to Tokyo",
+    travel: "Train leaves Kaga Onsen at 11:37, so check out earlier than noon.",
+    morning: [
+      { n: "Breakfast at the ryokan", e: "🍽️", d: "Confirm the station shuttle time with the ryokan to make the 11:37." },
+      { n: "Hakutaka 562 · Kaga Onsen 11:37 → Tokyo 14:52", e: "🚄", d: "Reserved seats. Car 8, seats 13-D and 13-E.", tag: "booked" }
+    ],
+    afternoon: [
+      { n: "Drop bags at Tokyo Station", e: "🧳" },
+      { n: "Jimbocho book district", e: "📚", d: "Tokyo's used-book neighborhood, with over 100 bookstores. Ohya Shobo sells old maps and woodblock prints. Glitch Coffee is a top light-roast cafe.", q: "Ohya Shobo, Jimbocho, Tokyo" },
+      { n: "magnif", e: "📚", d: "Vintage magazines, on the Jimbocho walk.", q: "magnif, Jinbocho, Tokyo", s: "sug" },
+      { n: "Kokyo Gaien + Nijubashi view", e: "🏯", d: "The open plaza in front of the Imperial Palace, lined with pine trees. The classic view is the stone bridge over the moat with the palace gate and a watchtower behind it. About 20 min on foot. Free, always open. East Gardens closed Mondays.", q: "Nijubashi Bridge, Tokyo" }
+    ],
+    evening: [
+      { n: "Early dinner in Kanda", e: "🍽️", d: "Kanda Matsuya (soba) or Kanda Ponchiken. Check Monday hours.", q: "Kanda Matsuya, Tokyo", s: "sug" },
+      { n: "teamLab Planets or Borderless", e: "🎨", q: "teamLab Planets Tokyo", tag: "reserve" },
+      { n: "If Planets: Monja Daruma after", e: "🍽️", d: "Tsukishima, two stops from Toyosu.", q: "Tsukishima Monja Daruma, Tokyo", s: "sug" },
+      { n: "Check in: Shibuya hotel", e: "🏨", d: "3-21-3 Shibuya, Shibuya City, Tokyo 150-0002 · 東京都渋谷区渋谷3-21-3. After teamLab. Collect your bags from Tokyo Station on the way.", q: "東京都渋谷区渋谷3-21-3", tag: "booked" }
+    ] },
+
+  { date: "2026-12-08", stay: "tokyo2", title: "Komaba, Shimokitazawa, Shibuya Sky",
+    morning: [ { n: "Japan Folk Crafts Museum", e: "🏛️", d: "Founded by Soetsu Yanagi, who started the mingei folk-craft movement. Pottery, textiles and woodwork in his old house. Komaba. Shoes off. Closed Mondays.", q: "Japan Folk Crafts Museum, Komaba" } ],
+    afternoon: [
+      { n: "Shimokitazawa resale", e: "🛍️", d: "Tokyo's vintage clothing neighborhood: low-rise streets packed with secondhand shops. Haight & Ashbury and Flamingo for curated vintage, New York Joe Exchange for cheap resale.", q: "Shimokitazawa Station" },
+      { n: "Shimokitazawa records", e: "🛍️", d: "Upstairs Records & Bar, Record Station.", q: "Upstairs Records & Bar, Shimokitazawa", s: "sug" },
+      { n: "Lunch + coffee", e: "🍽️", d: "Yamatotoru (sushi) or Sunny Hop. Kissa Ray and Coffee County are on the way to Gotokuji.", q: "Yamatotoru, Setagaya, Tokyo", s: "sug" },
+      { n: "Gotokuji Temple", e: "🛕", d: "Small temple known as the home of the maneki-neko, the beckoning cat. Visitors leave thousands of white cat figurines here. Best in the late-afternoon light.", q: "Gotokuji Temple, Tokyo" }
+    ],
+    evening: [
+      { n: "Shibuya Sky 18:00", e: "🌆", d: "Open-air rooftop deck 229 m up on Shibuya Scramble Square, looking down on the crossing. Cold. Closes in high wind.", q: "Shibuya Sky", tag: "reserve" },
+      { n: "Consider the sunset slot", e: "🌆", d: "Your 18:00 slot is after dark (sunset is around 16:30), so you'll see the city lit up. A slot around 16:00 catches sunset, and Mt. Fuji on a clear day. Craft says slots open one week ahead, so a switch may still be possible.", s: "sug" },
+      { n: "Dinner: Narukiyo", e: "🍽️", d: "Yakitori, short walk from the hotel.", q: "Narukiyo, Shibuya, Tokyo", tag: "reserve", s: "sug" }
+    ] },
+
+  { date: "2026-12-10", stay: "tokyo2", title: "Shinjuku Gyoen, Ghibli, Kichijoji",
+    morning: [ { n: "Shinjuku Gyoen 10:00 to 11:30", e: "🌳", d: "Large garden mixing Japanese, English and French styles. Holds autumn color later than Kyoto. ¥500. Closed Mondays. Then the Chuo line west.", q: "Shinjuku Gyoen" } ],
+    afternoon: [
+      { n: "Quick lunch: Ramen Matsui", e: "🍽️", d: "By the Okido gate. Only if you're there by 11:30.", q: "RAMEN MATSUI, Yotsuya, Tokyo", s: "sug" },
+      { n: "Inokashira Park", e: "🌳", d: "Park with a long pond and rowboats, on the walk from Kichijoji to the Ghibli Museum.", q: "Inokashira Park" },
+      { n: "Ghibli Museum 14:00", e: "🏛️", d: "Ticket is for Thu Dec 10. Ticket link only opens from inside Japan, so bookmark it from the email.", q: "Ghibli Museum, Mitaka", tag: "booked" }
+    ],
+    evening: [
+      { n: "Harmonica Yokocho", e: "🍸", d: "Postwar maze of about 100 tiny bars and counters by Kichijoji north exit. Good food, small plates.", q: "Harmonica Yokocho, Kichijoji" },
+      { n: "Nightcap in Shinjuku", e: "🍸", d: "On the way home: Golden Gai (Bar Darling) or Shinjuku Whisky Salon.", q: "Golden Gai, Shinjuku", s: "sug" }
+    ] },
+
+  { date: "2026-12-09", stay: "tokyo2", title: "Meiji Jingu, Harajuku, Ginza",
+    morning: [
+      { n: "Meiji Jingu", e: "⛩️", d: "Shinto shrine to Emperor Meiji, set in a forest of 100,000 trees in the middle of the city. Closes 16:00 in December. Free, about 1 hr. South entrance by Harajuku Station.", q: "Meiji Jingu" },
+      { n: "Gaien ginkgo avenue", e: "🌳", d: "Avenue of 146 ginkgo trees that turn bright yellow in late autumn. May be past peak.", q: "Meiji Jingu Gaien Ginkgo Avenue" }
+    ],
+    afternoon: [
+      { n: "Lunch: Harajuku Gyozarou", e: "🍽️", q: "Harajuku Gyozarou, Tokyo", s: "sug" },
+      { n: "@cosme TOKYO, then Ura-Harajuku + Cat Street", e: "🛍️", d: "@cosme TOKYO is a three-floor Japanese beauty store. Ura-Harajuku and Cat Street are the back streets of small shops behind Omotesando. RAGTAG for designer resale.", q: "Cat Street, Harajuku, Tokyo" },
+      { n: "Harajuku shops from the list", e: "🛍️", d: "BEAMS, Brain Dead Studios, Human Made, Domicile, Karaku, Pat Market.", q: "BEAMS Harajuku", s: "sug" },
+      { n: "GYRE", e: "🛍️", d: "Omotesando building of designer shops and gallery space. visvim and the MoMA Design Store are inside. Artek and Snow Peak are next door.", q: "GYRE Omotesando", s: "sug" }
+    ],
+    evening: [
+      { n: "Ginza: Itoya, Ginza Loft, Morioka Shoten", e: "🛍️", d: "Itoya is a 12-floor stationery store. Ginza Loft is a lifestyle store. Morioka Shoten is a one-book-a-week bookshop. Itoya stays. Loft and Morioka Shoten are the first to drop.", q: "Itoya Ginza" },
+      { n: "Dover Street Market + Atlantis Vintage", e: "🛍️", d: "A block or two from Itoya.", q: "Dover Street Market Ginza", s: "sug" },
+      { n: "Dinner in Ginza", e: "🍽️", q: "Ginza, Tokyo" },
+      { n: "Ginza dinner picks", e: "🍽️", d: "Ginza Katsukami (tonkatsu), Ushigoro S (yakiniku), Tempura Abe, Ginza Sen-ryo (sushi).", q: "Ginza Katsukami, 5-6-10 Ginza, Tokyo", tag: "reserve", s: "sug" },
+      { n: "After: High Five", e: "🍸", d: "Classic cocktail bar.", q: "High Five bar, Ginza", s: "sug" }
+    ] },
+
+  { date: "2026-12-11", stay: "tokyo2", title: "Tsukiji, then home",
+    travel: "Leave central Tokyo around 12:15 on the N'EX from Tokyo Station. Flight at 16:00. Leave time for the tax refund desk at Narita.",
+    morning: [ { n: "Tsukiji outer market", e: "🍽️", d: "Street food and kitchen shops around the old fish market site. Tamagoyaki, grilled seafood, knives. Around 9:30.", q: "Tsukiji Outer Market" } ],
+    afternoon: [
+      { n: "Hama-rikyu garden", e: "🌳", d: "Former shogun's garden on Tokyo Bay, with a seawater tidal pond and a teahouse on the water. 10 min walk. Drop if the morning runs long.", q: "Hama-rikyu Gardens", tag: "optional" },
+      { n: "Or: Ginza Hachigou at 11:00", e: "🍽️", d: "Michelin Bib ramen, 10 min from Tsukiji. Book on TableCheck.", q: "Ginza Hachigou, 3-14-2 Ginza, Tokyo", s: "sug" }
+    ],
+    evening: [ { n: "Flight home", e: "✈️" } ] }
+];
+</script>
+<script>
+window.PLACES=[{"n":"Flip up!2","c":"coffee","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"Flip up!2, Japan, 〒604-8117 Kyoto, Nakagyo Ward, Horinouecho, 105","km":{"kyoto":0.2},"d":"Bakery, known for its bagels"},{"n":"SAMURAI NINJA MUSEUM Kyoto","c":"see","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"SAMURAI NINJA MUSEUM Kyoto, 109 Horinouecho, Nakagyo Ward, Kyoto, 604-8117, Japan","km":{"kyoto":0.2},"d":"Hands-on samurai and ninja experience"},{"n":"Yakinikuya Masuichi SakaiNishiki","c":"eat","a":"Downtown (near hotel)","city":"kyoto","note":"Reserve","q":"Yakinikuya Masuichi SakaiNishiki, Kyoto","km":{"kyoto":0.3},"d":"Yakiniku (grill your own beef)"},{"n":"Ogawa Coffee - Sakaimachi Nishiki","c":"coffee","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"Ogawa Coffee - Sakaimachi Nishiki, Kyoto","km":{"kyoto":0.3},"d":"Kyoto coffee roaster, breakfast"},{"n":"MOTOI Gyoza","c":"eat","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"MOTOI Gyoza, 470-2 Setoyacho, Nakagyo Ward, Kyoto, 604-8122, Japan","km":{"kyoto":0.4},"d":"Gyoza and Chinese small plates"},{"n":"Nishiki Market","c":"see","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"Nishiki Market, Nakagyo Ward, Kyoto, 604-8055, Japan","km":{"kyoto":0.4},"d":"Covered food market street"},{"n":"Katsukura Shijo Higashinotoin","c":"eat","a":"Downtown (near hotel)","city":"kyoto","note":"Craft: must go. Walk-in","q":"Katsukura Shijo Higashinotoin, Kyoto","km":{"kyoto":0.4},"d":"Tonkatsu (breaded pork cutlet)"},{"n":"Umeshin (karaage)","c":"eat","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"Umeshin (karaage), 501-5 Higashigawacho, Nakagyo Ward, Kyoto, 604-8046, Japan","km":{"kyoto":0.5},"d":"Karaage fried chicken to go"},{"n":"Wajoryomen Sugari","c":"eat","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"Wajoryomen Sugari, 471-1 Kannondocho, Nakagyo Ward, Kyoto, 604-8222, Japan","km":{"kyoto":0.5},"d":"Tsukemen (dipping ramen)"},{"n":"Kyoto Wamen Yukichi Honpo","c":"eat","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"Kyoto Wamen Yukichi Honpo, Japan, 〒604-8046 Kyoto, Nakagyo Ward, Higashigawacho, 506-1","km":{"kyoto":0.5},"d":"Ramen"},{"n":"KYOTO ENGINE RAMEN","c":"eat","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"KYOTO ENGINE RAMEN, 580-2 Nakanocho, Nakagyo Ward, Kyoto, 604-8042, Japan","km":{"kyoto":0.6},"d":"Ramen"},{"n":"Kyukyodo","c":"shop","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"Kyukyodo, Kyoto","km":{"kyoto":0.6},"d":"Incense, paper and stationery since 1663"},{"n":"Nomura Tailor Shijo Store","c":"shop","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"Nomura Tailor Shijo Store, Kyoto","km":{"kyoto":0.6},"d":"Fabric and sewing shop"},{"n":"Kyoto Taishō Sushi Kawaramachi Ichigōten","c":"eat","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"Kyoto Taishō Sushi Kawaramachi Ichigōten, Japan, 〒604-8032 Kyoto, Nakagyo Ward, Yamazakicho, 258AD-G 四条河原町 B1F","km":{"kyoto":0.7},"d":"Casual standing sushi"},{"n":"Men-ya Takakura Nijo","c":"eat","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"Men-ya Takakura Nijo, Kyoto","km":{"kyoto":0.7},"d":"Ramen"},{"n":"Kyoto Tonkatsu Katsuda Shijokarasuma","c":"eat","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"Kyoto Tonkatsu Katsuda Shijokarasuma, Kyoto","km":{"kyoto":0.7},"d":"Tonkatsu"},{"n":"Ibushigin Kazuya","c":"eat","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"Ibushigin Kazuya, Japan, 〒604-8021 Kyoto, Nakagyo Ward, Kitakurumayacho, 276 永吉ビル １F","km":{"kyoto":0.8},"d":"Izakaya, smoked dishes"},{"n":"D&DEPARTMENT KYOTO","c":"shop","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"D&DEPARTMENT KYOTO, Japan, 〒600-8084 Kyoto, Shimogyo Ward, Shinkaicho, 397 本山佛光寺内","km":{"kyoto":0.8},"d":"Design shop and cafe inside a temple"},{"n":"Men-ya Inoichi","c":"eat","a":"Downtown (near hotel)","city":"kyoto","note":"Stop by in the morning to get a time slot","q":"Men-ya Inoichi, Kyoto","km":{"kyoto":0.8},"d":"Michelin Bib ramen, clear dashi broth"},{"n":"KANEGURA","c":"eat","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"KANEGURA, Kyoto","km":{"kyoto":0.8},"d":"Izakaya"},{"n":"Men-ya Inoichi Hanare","c":"eat","a":"Downtown (near hotel)","city":"kyoto","note":"Sister shop of Inoichi","q":"Men-ya Inoichi Hanare, Kyoto","km":{"kyoto":0.8},"d":"Ramen"},{"n":"music bar Beatle momo","c":"drink","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"music bar Beatle momo, Japan, 〒604-8016 Kyoto, Nakagyo Ward, Shimokorikicho, 204-4 啓和 ビル 2F","km":{"kyoto":0.9},"d":"Beatles music bar"},{"n":"GOOD morning RECORD BAR","c":"drink","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"GOOD morning RECORD BAR, 90-7 Shincho, Shimogyo Ward, Kyoto, 600-8001, Japan","km":{"kyoto":0.9},"d":"Vinyl listening bar"},{"n":"Feed ME Orange","c":"eat","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"Feed ME Orange, エディオン 京都四条河原町店 地下1階, 68 Shincho, Shimogyo Ward, Kyoto, 600-8001, Japan","km":{"kyoto":0.9},"d":"Food spot in the Edion basement"},{"n":"Jam House","c":"drink","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"Jam House, Japan, 〒600-8012 Kyoto, Shimogyo Ward, Saitocho, 126 ニュー木屋町ビル F５","km":{"kyoto":1.0},"d":"Music bar"},{"n":"L'Escamoteur","c":"drink","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"L'Escamoteur, 138-9 Saitocho, Shimogyo Ward, Kyoto, 600-8012, Japan","km":{"kyoto":1.0},"d":"Cocktail bar, magic theme"},{"n":"Jazzy Sport Kyoto","c":"shop","a":"Gion + Higashiyama","city":"kyoto","note":"","q":"Jazzy Sport Kyoto, Japan, 〒605-0086 Kyoto, Higashiyama Ward, Benzaitencho, 19 y gion 5F","km":{"kyoto":1.0},"d":"Record store"},{"n":"Sushi Kaiseki Kozuki","c":"eat","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"Sushi Kaiseki Kozuki, Yabushitacho, Shimogyo Ward, Kyoto, 600-8448, Japan","km":{"kyoto":1.1},"d":"Sushi course dinner"},{"n":"Kotohogi","c":"eat","a":"Downtown (near hotel)","city":"kyoto","note":"","q":"Kotohogi, 506 Fujiokacho, Nakagyo Ward, Kyoto, 604-8364, Japan","km":{"kyoto":1.1},"d":"Sushi"},{"n":"The Common One Bar Kyoto","c":"drink","a":"Gion + Higashiyama","city":"kyoto","note":"","q":"The Common One Bar Kyoto, 46-1 Motoyoshicho, Higashiyama Ward, Kyoto, 605-0087, Japan","km":{"kyoto":1.1},"d":"Bar"},{"n":"Gyoza Hohei","c":"eat","a":"Gion + Higashiyama","city":"kyoto","note":"","q":"Gyoza Hohei, 373-3 Kiyomotocho, Higashiyama Ward, Kyoto, 605-0084, Japan","km":{"kyoto":1.2},"d":"Tiny gyoza counter, lines"},{"n":"Oni Tofu","c":"eat","a":"Elsewhere in Kyoto","city":"kyoto","note":"","q":"Oni Tofu, 647-2 Suhamacho, Shimogyo Ward, Kyoto, 600-8048, Japan","km":{"kyoto":1.2},"d":"Tofu dishes"},{"n":"Gion Tanto","c":"eat","a":"Gion + Higashiyama","city":"kyoto","note":"","q":"Gion Tanto, 372 Kiyomotocho, Higashiyama Ward, Kyoto, 605-0084, Japan","km":{"kyoto":1.2},"d":"Okonomiyaki"},{"n":"Senmonten Kyōto Gion Head Shop","c":"eat","a":"Gion + Higashiyama","city":"kyoto","note":"","q":"Senmonten Kyōto Gion Head Shop, Japan, 〒605-0084 Kyoto, Higashiyama Ward, 花見小路 清本町３８０−３ 竹会館 1F","km":{"kyoto":1.3},"d":"Bite-size gyoza specialist"},{"n":"Nijō Castle","c":"see","a":"Elsewhere in Kyoto","city":"kyoto","note":"Closed Tuesdays in December","q":"Nijō Castle, 541 Nijojocho, Nakagyo Ward, Kyoto, 604-8301, Japan","km":{"kyoto":1.4},"d":"Shogun's castle, nightingale floors"},{"n":"Kenninji Temple","c":"see","a":"Gion + Higashiyama","city":"kyoto","note":"","q":"Kenninji Temple, Japan, 〒605-0811 Kyoto, Higashiyama Ward, Komatsucho, ５８４番地","km":{"kyoto":1.4},"d":"Kyoto's oldest Zen temple, dragon ceiling"},{"n":"Gion Duck Noodles","c":"eat","a":"Gion + Higashiyama","city":"kyoto","note":"Duck noodles!","q":"Gion Duck Noodles, Japan, 〒605-0073 Kyoto, Higashiyama Ward, Gionmachi Kitagawa, 329 1 階D号","km":{"kyoto":1.4},"d":"Duck ramen"},{"n":"ACTUAL KYOTO","c":"coffee","a":"Elsewhere in Kyoto","city":"kyoto","note":"","q":"ACTUAL KYOTO, 20-2 Mibukayogoshocho, Nakagyo Ward, Kyoto, 604-8811, Japan","km":{"kyoto":1.5},"d":"Cafe"},{"n":"Totaro","c":"coffee","a":"Elsewhere in Kyoto","city":"kyoto","note":"","q":"Totaro, Kyoto","km":{"kyoto":1.5},"d":"Coffee shop"},{"n":"Walden Woods Kyoto","c":"coffee","a":"Elsewhere in Kyoto","city":"kyoto","note":"","q":"Walden Woods Kyoto, Kyoto","km":{"kyoto":1.6},"d":"White-walled coffee roastery"},{"n":"Kyoto Sento Imperial Palace","c":"see","a":"Elsewhere in Kyoto","city":"kyoto","note":"Guided tours by reservation only","q":"Kyoto Sento Imperial Palace, Kyotogyoen, Kamigyo Ward, Kyoto, 602-0881, Japan","km":{"kyoto":1.7},"d":"Imperial gardens"},{"n":"Den Kyoto - Dusit Thani Kyoto","c":"drink","a":"Elsewhere in Kyoto","city":"kyoto","note":"","q":"Den Kyoto - Dusit Thani Kyoto, Japan, 〒600-8327 Kyoto, Shimogyo Ward, Nishinotoincho, 466","km":{"kyoto":1.8},"d":"Hotel cocktail bar"},{"n":"Family Sushi Nigiri-Itcho!","c":"eat","a":"Elsewhere in Kyoto","city":"kyoto","note":"","q":"Family Sushi Nigiri-Itcho!, 16 Mibumatsubaracho, Nakagyo Ward, Kyoto, 604-8823, Japan","km":{"kyoto":2.0},"d":"Casual sushi"},{"n":"ARCHI coffee and wine","c":"coffee","a":"Elsewhere in Kyoto","city":"kyoto","note":"","q":"ARCHI coffee and wine, 65-21 Mibutakahicho, Nakagyo Ward, Kyoto, 604-8824, Japan","km":{"kyoto":2.0},"d":"Cafe and wine bar"},{"n":"Sumire Coffee","c":"coffee","a":"Elsewhere in Kyoto","city":"kyoto","note":"","q":"Sumire Coffee, 747-8 Tatsumicho, Shimogyo Ward, Kyoto, 600-8307, Japan","km":{"kyoto":2.0},"d":"Coffee shop"},{"n":"Okazaki side streets","c":"eat","a":"Okazaki + Philosopher's Path","city":"kyoto","note":"Look for the little sushi and ramen stalls","q":"Okazaki side streets, Okazaki Seishojicho, Sakyo Ward, Kyoto, 606-8343, Japan","km":{"kyoto":2.1},"d":"Small food stalls"},{"n":"Sannenzaka","c":"see","a":"Gion + Higashiyama","city":"kyoto","note":"","q":"Sannenzaka, Kyoto","km":{"kyoto":2.1},"d":"Old stone-paved slope below Kiyomizu"},{"n":"Honke Daiichi-Asahi","c":"eat","a":"Kyoto Station + south","city":"kyoto","note":"Ramen by Kyoto Station","q":"Honke Daiichi-Asahi, 845 Higashishiokojicho, Shimogyo Ward, Kyoto, 600-8216, Japan","km":{"kyoto":2.3},"d":"Kyoto-style ramen since 1947"},{"n":"woven","c":"coffee","a":"Okazaki + Philosopher's Path","city":"kyoto","note":"","q":"woven, 2-17 Okazaki Nishifukunokawacho, Sakyo Ward, Kyoto, 606-8326, Japan","km":{"kyoto":2.4},"d":"Coffee shop"},{"n":"Cafe 33","c":"coffee","a":"Elsewhere in Kyoto","city":"kyoto","note":"","q":"cafe 33, Kyoto","d":"Cafe","km":{"kyoto":2.4}},{"n":"COYOTE the ordinary shop","c":"shop","a":"Elsewhere in Kyoto","city":"kyoto","note":"","q":"COYOTE the ordinary shop, Kyoto","km":{"kyoto":2.4},"d":"Cafe"},{"n":"Kiyomizu-dera","c":"see","a":"Gion + Higashiyama","city":"kyoto","note":"","q":"Kiyomizu-dera, 1 Chome-294 Kiyomizu, Higashiyama Ward, Kyoto, 605-0862, Japan","km":{"kyoto":2.5},"d":"Hillside temple with wooden stage"},{"n":"Nanzen-ji","c":"see","a":"Okazaki + Philosopher's Path","city":"kyoto","note":"","q":"Nanzen-ji, Nanzenji Fukuchicho, Sakyo Ward, Kyoto, 606-8435, Japan","km":{"kyoto":3.0},"d":"Zen temple with brick aqueduct"},{"n":"Eikandō Temple","c":"see","a":"Okazaki + Philosopher's Path","city":"kyoto","note":"","q":"Eikandō Temple, 48 Eikandocho, Sakyo Ward, Kyoto, 606-8445, Japan","km":{"kyoto":3.1},"d":"Temple known for autumn color"},{"n":"Farmoon","c":"coffee","a":"Okazaki + Philosopher's Path","city":"kyoto","note":"","q":"Farmoon, Japan, 〒606-8285 Kyoto, Sakyo Ward, Kitashirakawa Higashikubotacho, ９","km":{"kyoto":3.6},"d":"Cafe"},{"n":"Juugo","c":"eat","a":"Okazaki + Philosopher's Path","city":"kyoto","note":"","q":"Juugo, 6-71 Jodoji Kamiminamidacho, Sakyo Ward, Kyoto, 606-8405","km":{"kyoto":3.7},"d":"Handmade soba"},{"n":"Kinkaku-ji","c":"see","a":"Elsewhere in Kyoto","city":"kyoto","note":"","q":"Kinkaku-ji, 1 Kinkakujicho, Kita Ward, Kyoto, 603-8361, Japan","km":{"kyoto":4.6},"d":"Golden Pavilion"},{"n":"Fushimi Inari Taisha","c":"see","a":"Kyoto Station + south","city":"kyoto","note":"","q":"Fushimi Inari Taisha, 68 Fukakusa Yabunouchicho, Fushimi Ward, Kyoto, 612-0882, Japan","km":{"kyoto":4.7},"d":"Thousands of orange torii gates"},{"n":"Rurikō-in Temple","c":"see","a":"Okazaki + Philosopher's Path","city":"kyoto","note":"Far north (Yase). Seasonal opening","q":"Rurikō-in Temple, 55 Kamitakano Higashiyama, Sakyo Ward, Kyoto, 606-0067, Japan","km":{"kyoto":7.6},"d":"Temple with reflective lacquer floor"},{"n":"% ARABICA Kyoto Arashiyama","c":"coffee","a":"Arashiyama","city":"kyoto","note":"","q":"% ARABICA Kyoto Arashiyama, 3-47 Sagatenryuji Susukinobabacho, Ukyo Ward, Kyoto, 616-8385","km":{"kyoto":7.8},"d":"Coffee by the river"},{"n":"Hozugawa River Boat Ride End Point","c":"see","a":"Arashiyama","city":"kyoto","note":"","q":"Hozugawa River Boat Ride End Point, Japan, 〒616-8386 Kyoto, Ukyo Ward, Sagakamenoocho, １３−616 8386","km":{"kyoto":8.1},"d":"Where the river boats land"},{"n":"Sagami","c":"eat","a":"Arashiyama","city":"kyoto","note":"","q":"Sagami, 11-1 Sagashakadofujinokicho, Ukyo Ward, Kyoto, 616-8447, Japan","km":{"kyoto":8.3},"d":"Udon"},{"n":"Arashiyama Bamboo Forest","c":"see","a":"Arashiyama","city":"kyoto","note":"List owner says skip. Go early if you go","q":"Arashiyama Bamboo Forest, Sagaogurayama Tabuchiyamacho, Ukyo Ward, Kyoto, 616-8394, Japan","km":{"kyoto":8.3},"d":"Bamboo grove path"},{"n":"Shoraian","c":"eat","a":"Arashiyama","city":"kyoto","note":"","q":"Shoraian, Japan, 〒616-8386 Kyoto, Ukyo Ward, Sagakamenoocho, 官 有地内","km":{"kyoto":8.4},"d":"Tofu course lunch by the river"},{"n":"Jōjakkōji Temple","c":"see","a":"Arashiyama","city":"kyoto","note":"","q":"Jōjakkōji Temple, 3 Sagaogurayama Oguracho, Ukyo Ward, Kyoto, 616-8397, Japan","km":{"kyoto":8.6},"d":"Hillside moss temple, autumn color"},{"n":"Saga Toriimoto Preserved Street","c":"see","a":"Arashiyama","city":"kyoto","note":"","q":"Saga Toriimoto Preserved Street, Japan, 〒616-8435 Kyoto, Ukyo Ward, 嵯峨鳥居本","km":{"kyoto":8.8},"d":"Old thatched-roof village street"},{"n":"Otagi Nenbutsuji Temple","c":"see","a":"Arashiyama","city":"kyoto","note":"","q":"Otagi Nenbutsuji Temple, 2-5 Sagatoriimoto Fukatanicho, Ukyo Ward, Kyoto, 616-8439, Japan","km":{"kyoto":9.5},"d":"1,200 stone statues"},{"n":"Junmaishusenmon YATA Shibuyaten","c":"drink","a":"Shibuya (near hotel)","city":"tokyo","note":"","q":"Junmaishusenmon YATA Shibuyaten, Japan, 〒150-0043 Tokyo, Shibuya, Dogenzaka, 1 Chome−6−9 ILA道玄坂ビル5F","km":{"ueno":8.7,"shibuya":0.6},"d":"Sake bar"},{"n":"Grandfather's","c":"drink","a":"Shibuya (near hotel)","city":"tokyo","note":"","q":"Grandfather's, Tokyo","km":{"ueno":8.3,"shibuya":0.5},"d":"Vinyl rock bar"},{"n":"TIGHT","c":"drink","a":"Shibuya (near hotel)","city":"tokyo","note":"","q":"TIGHT, 1 Chome-25-10 Shibuya, Tokyo 150-0002, Japan","km":{"ueno":8.4,"shibuya":0.5},"d":"Tiny bar"},{"n":"Narukiyo","c":"eat","a":"Shibuya (near hotel)","city":"tokyo","note":"Yakitori. Reserve","q":"Narukiyo, Japan, 〒150-0002 Tokyo, Shibuya, 2 Chome−7−14 ＶＯＲＴ青山 地下 １階","km":{"ueno":7.9,"shibuya":0.5},"d":"Yakitori and izakaya"},{"n":"I'm donut ? SHIBUYA","c":"coffee","a":"Shibuya (near hotel)","city":"tokyo","note":"","q":"I'm donut ? SHIBUYA, 2 Chome-9-1 Shibuya, Tokyo 150-0002, Japan","km":{"ueno":7.9,"shibuya":0.5},"d":"Brioche donuts, lines"},{"n":"Shibuya Loft","c":"shop","a":"Shibuya (near hotel)","city":"tokyo","note":"","q":"Shibuya Loft, 21-1 Udagawacho, Shibuya, Tokyo 150-0042, Japan","km":{"ueno":8.5,"shibuya":0.7},"d":"Stationery and lifestyle store"},{"n":"Chibachan Shibuya Store","c":"eat","a":"Shibuya (near hotel)","city":"tokyo","note":"","q":"Chibachan Shibuya Store, Japan, 〒150-0042 Tokyo, Shibuya, Udagawacho, 13−8 ちとせ会館 4F","km":{"ueno":8.5,"shibuya":0.8},"d":"Izakaya"},{"n":"IGORCOSY","c":"eat","a":"Shibuya (near hotel)","city":"tokyo","note":"","q":"IGORCOSY, Japan, 〒150-0013 Tokyo, Shibuya, Maruyamacho, 1−3 猪鼻ビル １Ｆ","km":{"ueno":8.9,"shibuya":1.0},"d":"Izakaya"},{"n":"next records","c":"shop","a":"Shibuya (near hotel)","city":"tokyo","note":"","q":"next records, Japan, 〒150-0042 Tokyo, Shibuya, Udagawacho, 11−11 Ryukou Building, 2nd Floor","km":{"ueno":8.6,"shibuya":1.0},"d":"Record store"},{"n":"Nepenthes Tokyo","c":"shop","a":"Shibuya (near hotel)","city":"tokyo","note":"","q":"Nepenthes Tokyo, Tokyo","km":{"ueno":7.7,"shibuya":0.9},"d":"Japanese menswear (Needles, Engineered Garments)"},{"n":"Nanamica Daikanyama","c":"shop","a":"Ebisu + Daikanyama + Nakameguro","city":"tokyo","note":"","q":"Nanamica Daikanyama, Tokyo","km":{"ueno":9.3,"shibuya":1.0},"d":"Japanese outdoor-inspired clothing"},{"n":"Hollywood Ranch Market","c":"shop","a":"Ebisu + Daikanyama + Nakameguro","city":"tokyo","note":"","q":"Hollywood Ranch Market, 28-17 Sarugakucho, Shibuya, Tokyo 150-0033, Japan","km":{"ueno":9.3,"shibuya":1.0},"d":"Vintage-style American clothing"},{"n":"WUCA TOKYO","c":"eat","a":"Shibuya (near hotel)","city":"tokyo","note":"","q":"WUCA TOKYO, Japan, 〒150-0041 Tokyo, Shibuya, Jinnan, 1 Chome−5−7 APPLE OHMIビル 1階","km":{"ueno":8.2,"shibuya":1.0},"d":"Oyster bar"},{"n":"NEPENTHES WOMAN TOKYO","c":"shop","a":"Shibuya (near hotel)","city":"tokyo","note":"","q":"NEPENTHES WOMAN TOKYO, Tokyo","km":{"ueno":7.6,"shibuya":0.9},"d":"Japanese womenswear"},{"n":"Usagi","c":"eat","a":"Ebisu + Daikanyama + Nakameguro","city":"tokyo","note":"","q":"Usagi, 8-13 Shinsencho, Shibuya, Tokyo 150-0045, Japan","km":{"ueno":9.3,"shibuya":1.1},"d":"Ramen"},{"n":"THE REAL McCOY'S","c":"shop","a":"Shibuya (near hotel)","city":"tokyo","note":"","q":"THE REAL McCOY'S, Tokyo","km":{"ueno":7.9,"shibuya":1.1},"d":"Heritage American workwear"},{"n":"Pizzeria e Trattoria da ISA","c":"eat","a":"Ebisu + Daikanyama + Nakameguro","city":"tokyo","note":"","q":"Pizzeria e Trattoria da ISA, 1 Chome-14-17 Aobadai, Meguro City, Tokyo 153-0042, Japan","km":{"ueno":9.7,"shibuya":1.3},"d":"Neapolitan pizza"},{"n":"Shodai","c":"eat","a":"Ebisu + Daikanyama + Nakameguro","city":"tokyo","note":"","q":"Shodai, Japan, 〒150-0022 Tokyo, Shibuya, Ebisuminami, 1 Chome−1−10 South Column Kobayashi, 1F","km":{"ueno":9.0,"shibuya":1.2},"d":"Soba"},{"n":"MoMA Design Store Omotesando","c":"shop","a":"Harajuku + Aoyama","city":"tokyo","note":"","q":"MoMA Design Store Omotesando, Japan, 〒150-0001 Tokyo, Shibuya, Jingumae, 5 Chome−10−1 GYRE 3F","km":{"ueno":7.5,"shibuya":1.2},"d":"Design gifts"},{"n":"Artek Tokyo Store","c":"shop","a":"Harajuku + Aoyama","city":"tokyo","note":"","q":"Artek Tokyo Store, Japan, 〒150-0001 Tokyo, Shibuya, Jingumae, 5 Chome−9−20 1F･B1F","km":{"ueno":7.5,"shibuya":1.1},"d":"Finnish furniture"},{"n":"Snow Peak Omotesando","c":"shop","a":"Harajuku + Aoyama","city":"tokyo","note":"","q":"Snow Peak Omotesando, 6 Chome-2-6 Jingumae, Shibuya, Tokyo 150-0001, Japan","km":{"ueno":7.6,"shibuya":1.2},"d":"Japanese outdoor gear"},{"n":"Harajuku Gyozarou","c":"eat","a":"Harajuku + Aoyama","city":"tokyo","note":"","q":"Harajuku Gyozarou, 6 Chome-2-4 Jingumae, Shibuya, Tokyo 150-0001, Japan","km":{"ueno":7.6,"shibuya":1.2},"d":"Gyoza, cheap and fast"},{"n":"visvim","c":"shop","a":"Harajuku + Aoyama","city":"tokyo","note":"","q":"visvim, Japan, 〒150-0001 Tokyo, Shibuya, Jingumae, 5 Chome−10−1 GYRE 2F","km":{"ueno":7.5,"shibuya":1.2},"d":"Japanese menswear"},{"n":"UNDERCOVER Aoyama","c":"shop","a":"Harajuku + Aoyama","city":"tokyo","note":"","q":"UNDERCOVER Aoyama, Tokyo","km":{"ueno":7.3,"shibuya":1.1},"d":"Japanese designer clothing"},{"n":"pizza marumo","c":"eat","a":"Ebisu + Daikanyama + Nakameguro","city":"tokyo","note":"","q":"pizza marumo, Japan, 〒150-0022 Tokyo, Shibuya, Ebisuminami, 1 Chome−11−13 恵比寿ヴェルソービル 1階","km":{"ueno":9.1,"shibuya":1.3},"d":"Pizza"},{"n":"Yoroniku Ebisu","c":"eat","a":"Ebisu + Daikanyama + Nakameguro","city":"tokyo","note":"","q":"Yoroniku Ebisu, Japan, 〒150-0013 Tokyo, Shibuya, Ebisu, 1 Chome−11−5 GEMS恵比寿 8F","km":{"ueno":8.8,"shibuya":1.3},"d":"High-end yakiniku"},{"n":"atmos BLUE OMOTESANDO","c":"shop","a":"Harajuku + Aoyama","city":"tokyo","note":"","q":"atmos BLUE OMOTESANDO, Tokyo","km":{"ueno":7.5,"shibuya":1.3},"d":"Sneakers"},{"n":"DE FRITES STAAN HARAJUKU","c":"eat","a":"Harajuku + Aoyama","city":"tokyo","note":"","q":"DE FRITES STAAN HARAJUKU, Japan, 〒150-0001 Tokyo, Shibuya, Jingumae, 4 Chome−29−9 神宮前ビルディング 1F","km":{"ueno":7.5,"shibuya":1.3},"d":"Steak frites"},{"n":"BRAIN DEAD STUDIOS","c":"shop","a":"Harajuku + Aoyama","city":"tokyo","note":"","q":"BRAIN DEAD STUDIOS, 4 Chome-29-8 Jingumae, Shibuya, Tokyo 150-0001, Japan","km":{"ueno":7.5,"shibuya":1.3},"d":"Streetwear store and cinema"},{"n":"Domicile Tokyo","c":"shop","a":"Harajuku + Aoyama","city":"tokyo","note":"","q":"Domicile Tokyo, 4 Chome-28-9 Jingumae, Shibuya, Tokyo 150-0001, Japan","km":{"ueno":7.4,"shibuya":1.4},"d":"Streetwear boutique"},{"n":"atmos URAHARA","c":"shop","a":"Harajuku + Aoyama","city":"tokyo","note":"","q":"atmos URAHARA, Tokyo","km":{"ueno":7.5,"shibuya":1.4},"d":"Sneakers"},{"n":"Supreme Harajuku","c":"shop","a":"Harajuku + Aoyama","city":"tokyo","note":"","q":"Supreme Harajuku, Tokyo","km":{"ueno":7.4,"shibuya":1.4},"d":"Streetwear"},{"n":"HUMAN MADE HARAJUKU","c":"shop","a":"Harajuku + Aoyama","city":"tokyo","note":"","q":"HUMAN MADE HARAJUKU, Tokyo","km":{"ueno":7.5,"shibuya":1.4},"d":"Streetwear"},{"n":"Coffee Supreme Tokyo","c":"coffee","a":"Tomigaya (Yoyogi Park)","city":"tokyo","note":"","q":"Coffee Supreme Tokyo, Japan, 〒150-0047 Tokyo, Shibuya, Kamiyamacho, 42−3 1F","km":{"ueno":8.7,"shibuya":1.5},"d":"Coffee shop"},{"n":"pignic cafe yoyogipark","c":"coffee","a":"Tomigaya (Yoyogi Park)","city":"tokyo","note":"","q":"pignic cafe yoyogipark, Japan, 〒151-0063 Tokyo, Shibuya, Tomigaya, 1 Chome−17−3 3A TERRACE BLD 2F","km":{"ueno":8.7,"shibuya":1.6},"d":"Picnic cafe by Yoyogi Park"},{"n":"Fuglen Tokyo","c":"coffee","a":"Tomigaya (Yoyogi Park)","city":"tokyo","note":"","q":"Fuglen Tokyo, 1 Chome-16-11 Tomigaya, Shibuya, Tokyo 151-0063, Japan","km":{"ueno":8.7,"shibuya":1.6},"d":"Norwegian coffee, cocktails at night"},{"n":"Ahiru Store","c":"drink","a":"Tomigaya (Yoyogi Park)","city":"tokyo","note":"Natural wine bistro","q":"Ahiru Store, 1 Chome-19-4 Tomigaya, 渋谷区 Shibuya, Tokyo 151-0063, Japan","km":{"ueno":8.7,"shibuya":1.6},"d":"Natural wine bar"},{"n":"STUSSY Harajuku Chapter","c":"shop","a":"Harajuku + Aoyama","city":"tokyo","note":"","q":"STUSSY Harajuku Chapter, Tokyo","km":{"ueno":7.3,"shibuya":1.5},"d":"Streetwear"},{"n":"Jackman","c":"shop","a":"Ebisu + Daikanyama + Nakameguro","city":"tokyo","note":"","q":"Jackman, 2 Chome-20-5 Ebisuminami, Shibuya, Tokyo 150-0022, Japan","km":{"ueno":9.2,"shibuya":1.5},"d":"Japanese sportswear basics"},{"n":"Seirinkan","c":"eat","a":"Ebisu + Daikanyama + Nakameguro","city":"tokyo","note":"","q":"Seirinkan, 2 Chome-6-4 Kamimeguro, Meguro City, Tokyo 153-0051, Japan","km":{"ueno":9.9,"shibuya":1.6},"d":"Neapolitan pizza, very few toppings"},{"n":"Pacific Furniture Service","c":"shop","a":"Ebisu + Daikanyama + Nakameguro","city":"tokyo","note":"","q":"Pacific Furniture Service, 1 Chome-20-4 Ebisuminami, Shibuya, Tokyo 150-0022, Japan","km":{"ueno":9.1,"shibuya":1.5},"d":"Furniture and home goods"},{"n":"KARAKU HARAJUKU","c":"shop","a":"Harajuku + Aoyama","city":"tokyo","note":"","q":"KARAKU HARAJUKU, イン・ザ・ストリームビル, 1F, 3 Chome-24-1 Jingumae, Shibuya, Tokyo 150-0001, Japan","km":{"ueno":7.2,"shibuya":1.6},"d":"Clothing"},{"n":"PAT MARKET","c":"shop","a":"Harajuku + Aoyama","city":"tokyo","note":"","q":"PAT MARKET, 3 Chome-27-8 Jingumae, Shibuya, Tokyo 150-0001, Japan","km":{"ueno":7.1,"shibuya":1.7},"d":"Used clothing"},{"n":"BLUE LUG Yoyogi Park","c":"shop","a":"Tomigaya (Yoyogi Park)","city":"tokyo","note":"","q":"BLUE LUG Yoyogi Park, 1 Chome-43-3 Tomigaya, Shibuya, Tokyo 151-0063, Japan","km":{"ueno":8.7,"shibuya":1.7},"d":"Bike shop and apparel"},{"n":"Massif","c":"eat","a":"Ebisu + Daikanyama + Nakameguro","city":"tokyo","note":"","q":"Massif, 3 Chome-7-11 Higashiyama, Meguro City, Tokyo 153-0043, Japan","km":{"ueno":10.1,"shibuya":1.8},"d":"Restaurant"},{"n":"BEAMS Women Harajuku","c":"shop","a":"Harajuku + Aoyama","city":"tokyo","note":"","q":"BEAMS Women Harajuku, Tokyo","km":{"ueno":7.2,"shibuya":1.7},"d":"Japanese select shop, women"},{"n":"BEAMS Plus Harajuku Store","c":"shop","a":"Harajuku + Aoyama","city":"tokyo","note":"","q":"BEAMS Plus Harajuku Store, Tokyo","km":{"ueno":7.2,"shibuya":1.6},"d":"Japanese select shop, menswear"},{"n":"BEAMS Harajuku","c":"shop","a":"Harajuku + Aoyama","city":"tokyo","note":"","q":"BEAMS Harajuku, Tokyo","km":{"ueno":7.2,"shibuya":1.6},"d":"Japanese select shop"},{"n":"Hirokawa Udon","c":"eat","a":"Ebisu + Daikanyama + Nakameguro","city":"tokyo","note":"","q":"Hirokawa Udon, 1 Chome-2-15 Yutenji, Meguro City, Tokyo 153-0052, Japan","km":{"ueno":10.5,"shibuya":2.2},"d":"Sanuki udon"},{"n":"The National Art Center, Tokyo","c":"see","a":"Harajuku + Aoyama","city":"tokyo","note":"Roppongi detour","q":"The National Art Center, Tokyo, 7 Chome-22-2 Roppongi, Minato City, Tokyo 106-8558, Japan","km":{"ueno":6.4,"shibuya":2.1},"d":"Rotating exhibitions, wave building"},{"n":"Meiji Jingu Gaien Gingko Avenue","c":"see","a":"Harajuku + Aoyama","city":"tokyo","note":"","q":"Meiji Jingu Gaien Gingko Avenue, 2 Chome-付近 Kita-Aoyama, Minato City, Tokyo 107-0061, Japan","km":{"ueno":6.2,"shibuya":2.2},"d":"Ginkgo-lined avenue"},{"n":"eper coffee","c":"coffee","a":"Ebisu + Daikanyama + Nakameguro","city":"tokyo","note":"","q":"eper coffee, Japan, 〒153-0052 Tokyo, Meguro City, Yutenji, 2 Chome−8−4 エクセルサカエ","km":{"ueno":10.7,"shibuya":2.5},"d":"Coffee shop"},{"n":"Acid Coffee Tokyo","c":"coffee","a":"Shimokitazawa","city":"tokyo","note":"","q":"Acid Coffee Tokyo, Tokyo","km":{"ueno":9.5,"shibuya":2.6},"d":"Coffee shop"},{"n":"Tonki","c":"eat","a":"Ebisu + Daikanyama + Nakameguro","city":"tokyo","note":"","q":"Tonki, 1 Chome-1-2 Shimomeguro, Meguro City, Tokyo 153-0064, Japan","km":{"ueno":9.8,"shibuya":2.7},"d":"Classic tonkatsu counter since 1939"},{"n":"COFFEE COUNTY Tokyo","c":"coffee","a":"Shimokitazawa","city":"tokyo","note":"","q":"COFFEE COUNTY Tokyo, Tokyo","km":{"ueno":10.5,"shibuya":3.1},"d":"Coffee shop"},{"n":"Kissa Ray","c":"coffee","a":"Shimokitazawa","city":"tokyo","note":"","q":"Kissa Ray, Tokyo","km":{"ueno":10.6,"shibuya":3.3},"d":"Retro kissaten cafe"},{"n":"SUNNY HOP -BEER & HOT DOG SHOP-","c":"drink","a":"Shimokitazawa","city":"tokyo","note":"","q":"SUNNY HOP -BEER & HOT DOG SHOP-, Japan, 〒155-0031 Tokyo, Setagaya City, Kitazawa, 4 Chome−5−3 北沢ビル 1F","km":{"ueno":10.4,"shibuya":3.3},"d":"Craft beer and hot dogs"},{"n":"Little Soul Cafe","c":"drink","a":"Shimokitazawa","city":"tokyo","note":"","q":"Little Soul Cafe, Japan, 〒155-0031 Tokyo, Setagaya City, Kitazawa, 3 Chome−20−2 大成ビル ２階","km":{"ueno":10.7,"shibuya":3.4},"d":"Bar"},{"n":"Yamatotoru","c":"eat","a":"Shimokitazawa","city":"tokyo","note":"","q":"Yamatotoru, 5 Chome-9-1 Daizawa, Setagaya City, Tokyo 155-0032, Japan","km":{"ueno":11.2,"shibuya":3.5},"d":"Sushi"},{"n":"JazzHaus POSY","c":"drink","a":"Shimokitazawa","city":"tokyo","note":"","q":"JazzHaus POSY, 5 Chome-6-14 Daizawa, Setagaya City, Tokyo 155-0032, Japan","km":{"ueno":11.2,"shibuya":3.4},"d":"Jazz bar"},{"n":"BOOK AND SONS","c":"shop","a":"Ebisu + Daikanyama + Nakameguro","city":"tokyo","note":"","q":"BOOK AND SONS, Japan, 〒152-0004 Tokyo, Meguro City, Takaban, 2 Chome−13−3 キャトル 鷹番","km":{"ueno":11.6,"shibuya":3.3},"d":"Typography and design bookstore"},{"n":"Nippon no Yōshoku Akasaka Tsutsui","c":"eat","a":"Elsewhere in Tokyo","city":"tokyo","note":"","q":"Nippon no Yōshoku Akasaka Tsutsui, Japan, 〒107-0052 Tokyo, Minato City, 22, 赤坂２丁目２２−２４ 泉赤坂ビル","km":{"ueno":5.4,"shibuya":3.2},"d":"Japanese-style Western food"},{"n":"Upstairs Records & Bar","c":"drink","a":"Shimokitazawa","city":"tokyo","note":"","q":"Upstairs Records & Bar, 3 Chome-27-1 Kitazawa, Setagaya City, Tokyo 155-0031, Japan","km":{"ueno":10.7,"shibuya":3.5},"d":"Records with a bar"},{"n":"Record Station","c":"shop","a":"Shimokitazawa","city":"tokyo","note":"","q":"Record Station, Tokyo","km":{"ueno":10.7,"shibuya":3.5},"d":"Record store"},{"n":"Flipper's Shimokitazawa","c":"coffee","a":"Shimokitazawa","city":"tokyo","note":"","q":"Flipper's Shimokitazawa, Japan, 〒155-0031 Tokyo, Setagaya City, Kitazawa, 2 Chome−26−20 1F","km":{"ueno":10.9,"shibuya":3.6},"d":"Soufflé pancakes"},{"n":"Et -THE CULTURAL COFFEEHOUSE-","c":"coffee","a":"Shimokitazawa","city":"tokyo","note":"","q":"Et -THE CULTURAL COFFEEHOUSE-, Japan, 〒155-0031 Tokyo, Setagaya City, Kitazawa, 2 Chome−22−3 下北パークフロント 1F,2F","km":{"ueno":11.2,"shibuya":3.7},"d":"Cafe"},{"n":"Sushi Mikata","c":"eat","a":"Elsewhere in Tokyo","city":"tokyo","note":"","q":"Sushi Mikata, Japan, 〒108-0047 Tokyo, Minato City, Mita, 4 Chome−1−4 Johnan Building Mita, 1 階A","km":{"ueno":7.3,"shibuya":3.4},"d":"Sushi"},{"n":"Uoshin Shinjuku","c":"eat","a":"Shinjuku","city":"tokyo","note":"","q":"Uoshin Shinjuku, Japan, 〒160-0022 Tokyo, Shinjuku City, Shinjuku, 3 Chome−35−5 2F","km":{"ueno":6.8,"shibuya":3.7},"d":"Seafood izakaya"},{"n":"Beams Japan","c":"shop","a":"Shinjuku","city":"tokyo","note":"","q":"Beams Japan, Japan, 〒160-0022 Tokyo, Shinjuku City, Shinjuku, 3 Chome−32−6 B1F 5F","km":{"ueno":6.6,"shibuya":3.7},"d":"Japan-made goods, six floors"},{"n":"RAMEN MATSUI","c":"eat","a":"Shinjuku","city":"tokyo","note":"","q":"RAMEN MATSUI, Japan, 〒160-0004 Tokyo, Shinjuku City, Yotsuya, 4 Chome−25−10 ダイアパレス御苑前 B-2","km":{"ueno":5.7,"shibuya":3.7},"d":"Ramen"},{"n":"Los Tacos Azules","c":"eat","a":"Shimokitazawa","city":"tokyo","note":"","q":"Los Tacos Azules, 1 Chome-17-9 Kamiuma, Setagaya City, Tokyo 154-0011, Japan","km":{"ueno":12.3,"shibuya":3.9},"d":"Blue corn tacos"},{"n":"Shinjuku Whisky Salon","c":"drink","a":"Shinjuku","city":"tokyo","note":"","q":"Shinjuku Whisky Salon, Japan, 〒160-0022 Tokyo, Shinjuku City, Shinjuku, 3 Chome−12−1 佐藤ビル 3階","km":{"ueno":6.4,"shibuya":3.9},"d":"Whisky bar"},{"n":"Henry's Bar","c":"drink","a":"Shinjuku","city":"tokyo","note":"","q":"Henry's Bar, Japan, 〒160-0022 Tokyo, Shinjuku City, Shinjuku, 3 Chome−10−2 2 階","km":{"ueno":6.4,"shibuya":3.8},"d":"Bar"},{"n":"Robata Yui","c":"eat","a":"Shinjuku","city":"tokyo","note":"","q":"Robata Yui, Japan, 〒160-0023 Tokyo, Shinjuku City, Nishishinjuku, 1 Chome−4−11 宝ビル 1階","km":{"ueno":7.1,"shibuya":4.1},"d":"Robatayaki grill izakaya"},{"n":"Sake stanD Rin","c":"drink","a":"Shinjuku","city":"tokyo","note":"","q":"Sake stanD Rin, Japan, 〒160-0023 Tokyo, Shinjuku City, Nishishinjuku, 1 Chome−4−11 宝ビル 1階","km":{"ueno":7.1,"shibuya":4.1},"d":"Standing sake bar"},{"n":"Happy (Rockin' Soul Bar)","c":"drink","a":"Shinjuku","city":"tokyo","note":"","q":"Happy (Rockin' Soul Bar), Japan, 〒160-0021 Tokyo, Shinjuku City, Kabukicho, 1 Chome−1−7 マルハビル ３Ｆ","km":{"ueno":6.4,"shibuya":4.1},"d":"Vinyl soul and rock bar"},{"n":"Music Fashion Bar RUN","c":"drink","a":"Shinjuku","city":"tokyo","note":"","q":"Music Fashion Bar RUN, Japan, 〒160-0021 Tokyo, Shinjuku City, Kabukicho, 1 Chome−10−3 G3, １F","km":{"ueno":6.6,"shibuya":4.2},"d":"Music bar"},{"n":"MUSIC BAR L.G","c":"drink","a":"Shinjuku","city":"tokyo","note":"","q":"MUSIC BAR L.G, Japan, 〒160-0021 Tokyo, Shinjuku City, Kabukicho, 1 Chome−13−7 tokyo19ビル B1","km":{"ueno":6.6,"shibuya":4.2},"d":"Music bar"},{"n":"Bar Darling (Golden Gai)","c":"drink","a":"Shinjuku","city":"tokyo","note":"","q":"Bar Darling (Golden Gai), Japan, 〒160-0021 Tokyo, Shinjuku City, Kabukicho, 1 Chome−1−5 新宿ゴールデン街 1階","km":{"ueno":6.4,"shibuya":4.2},"d":"Tiny Golden Gai bar"},{"n":"Liquid Ruby","c":"drink","a":"Shinjuku","city":"tokyo","note":"","q":"Liquid Ruby, Japan, 〒160-0023 Tokyo, Shinjuku City, Nishishinjuku, 7 Chome−1−4 ゼンコウビル 3階","km":{"ueno":6.9,"shibuya":4.2},"d":"Bar"},{"n":"coffee swamp","c":"coffee","a":"Shinjuku","city":"tokyo","note":"","q":"coffee swamp, Japan, 〒160-0023 Tokyo, Shinjuku City, Nishishinjuku, 7 Chome−21−12 れんげ荘 105号","km":{"ueno":7.3,"shibuya":4.4},"d":"Coffee shop"},{"n":"Michishirube","c":"eat","a":"Shinjuku","city":"tokyo","note":"Intestine is good","q":"Michishirube, 1 Chome-3-7 Kabukicho, Shinjuku City, Tokyo 160-0021, Japan","km":{"ueno":6.5,"shibuya":4.2},"d":"Izakaya, offal dishes"},{"n":"Tsumugido Shinjuku","c":"eat","a":"Shinjuku","city":"tokyo","note":"","q":"Tsumugido Shinjuku, Japan, 〒160-0023 Tokyo, Shinjuku City, Nishishinjuku, 7 Chome−18−18 新宿税理士ビル 別館 1F","km":{"ueno":7.1,"shibuya":4.4},"d":"Izakaya"},{"n":"Tonkatsu Fry-ya","c":"eat","a":"Elsewhere in Tokyo","city":"tokyo","note":"","q":"Tonkatsu Fry-ya, Japan, 〒169-0075 Tokyo, Shinjuku City, Takadanobaba, 1 Chome−32−11 小澤ビル B1階","km":{"ueno":6.3,"shibuya":6.0},"d":"Tonkatsu"},{"n":"Tonkatsu Narikura","c":"eat","a":"Elsewhere in Tokyo","city":"tokyo","note":"Famous, long lines. Off route","q":"Tonkatsu Narikura, 4 Chome-33-9 Naritahigashi, Suginami City, Tokyo 166-0015, Japan","km":{"ueno":12.3,"shibuya":7.6},"d":"Top-rated tonkatsu, long lines"},{"n":"Shiosoba Jiku","c":"eat","a":"Elsewhere in Tokyo","city":"tokyo","note":"","q":"Shiosoba Jiku, 4 Chome-14-7 Takaidohigashi, Suginami City, Tokyo 168-0072, Japan","km":{"ueno":14.1,"shibuya":8.6},"d":"Salt ramen"},{"n":"Kanaya Brush","c":"shop","a":"Asakusa + Kappabashi","city":"tokyo","note":"","q":"Kanaya Brush, 1 Chome-5-9 Nishiasakusa, Taito City, Tokyo 111-0035, Japan","km":{"ueno":1.4,"shibuya":9.7},"d":"Handmade brushes"},{"n":"Tokyo Biken","c":"shop","a":"Asakusa + Kappabashi","city":"tokyo","note":"","q":"Tokyo Biken, 1 Chome-5-15 Nishiasakusa, Taito City, Tokyo 111-0035, Japan","km":{"ueno":1.4,"shibuya":9.7},"d":"Kitchen knives"},{"n":"Hashitou","c":"shop","a":"Asakusa + Kappabashi","city":"tokyo","note":"","q":"Hashitou, 2 Chome-6-2 Nishiasakusa, Taito City, Tokyo 111-0035, Japan","km":{"ueno":1.4,"shibuya":9.8},"d":"Chopsticks"},{"n":"Kanda Matsuya","c":"eat","a":"Jimbocho + Kanda","city":"tokyo","note":"Soba since 1884. Check Monday hours","q":"Kanda Matsuya, 1 Chome-13 Kanda Sudacho, Chiyoda City, Tokyo 101-0041, Japan","km":{"ueno":1.4,"shibuya":7.2},"d":"Soba since 1884"},{"n":"Kanda Ponchiken","c":"eat","a":"Jimbocho + Kanda","city":"tokyo","note":"Jazz playing ramen shop!","q":"Kanda Ponchiken, Japan, 〒101-0052 Tokyo, Chiyoda City, Kanda Ogawamachi, 2 Chome−8 Ougi Building, 1階","km":{"ueno":1.7,"shibuya":6.8},"d":"Tonkatsu"},{"n":"Asakusa Monja Zenya","c":"eat","a":"Asakusa + Kappabashi","city":"tokyo","note":"","q":"Asakusa Monja Zenya, 1 Chome-21-9 Asakusa, Taito City, Tokyo 111-0032, Japan","km":{"ueno":2.0,"shibuya":10.2},"d":"Monjayaki (Tokyo griddle dish)"},{"n":"Asakusa Unana","c":"eat","a":"Asakusa + Kappabashi","city":"tokyo","note":"","q":"Asakusa Unana, 2 Chome-7-21 Asakusa, Taito City, Tokyo 111-0032, Japan","km":{"ueno":2.0,"shibuya":10.3},"d":"Grilled eel rice balls to go"},{"n":"Wagyu Sukiyaki Goku","c":"eat","a":"Asakusa + Kappabashi","city":"tokyo","note":"","q":"Wagyu Sukiyaki Goku, Japan, 〒111-0032 Tokyo, Taito City, Asakusa, 1 Chome−18−12 ＪＳビル 雷門 1F","km":{"ueno":2.0,"shibuya":10.2},"d":"Wagyu sukiyaki"},{"n":"Kameya","c":"eat","a":"Jimbocho + Kanda","city":"tokyo","note":"","q":"Kameya, 2 Chome-13-1 Uchikanda, Chiyoda City, Tokyo 101-0047, Japan","km":{"ueno":1.9,"shibuya":6.9},"d":"Standing soba bar"},{"n":"Nakamise Shopping Street","c":"shop","a":"Asakusa + Kappabashi","city":"tokyo","note":"","q":"Nakamise Shopping Street, 1 Chome-36-3 Asakusa, Taito City, Tokyo 111-0032, Japan","km":{"ueno":2.1,"shibuya":10.3},"d":"Snack and souvenir street to Senso-ji"},{"n":"Asakusa Menchi","c":"eat","a":"Asakusa + Kappabashi","city":"tokyo","note":"Must try. Check closing time","q":"Asakusa Menchi, 2 Chome-3-3 Asakusa, Taito City, Tokyo 111-0032, Japan","km":{"ueno":2.1,"shibuya":10.3},"d":"Fried minced-meat cutlets to go"},{"n":"magnif","c":"shop","a":"Jimbocho + Kanda","city":"tokyo","note":"","q":"magnif, Japan, 〒101-0051 Tokyo, Chiyoda City, Kanda Jinbocho, 1 Chome−１７","km":{"ueno":1.9,"shibuya":6.5},"d":"Vintage magazines"},{"n":"Kuroge Wagyu Ichinoya Asakusa","c":"eat","a":"Asakusa + Kappabashi","city":"tokyo","note":"","q":"Kuroge Wagyu Ichinoya Asakusa, Japan, 〒111-0032 Tokyo, Taito City, Asakusa, 1 Chome−34−6 大阪屋ビル 1F","km":{"ueno":2.2,"shibuya":10.3},"d":"Wagyu restaurant"},{"n":"Chinya","c":"eat","a":"Asakusa + Kappabashi","city":"tokyo","note":"","q":"Chinya, 2 Chome-16-1 Hanakawado, Taito City, Tokyo 111-0033, Japan","km":{"ueno":2.6,"shibuya":10.8},"d":"Sukiyaki since 1880"},{"n":"GOOD COFFEE FARMS Cafe & Bar","c":"coffee","a":"Elsewhere in Tokyo","city":"tokyo","note":"","q":"GOOD COFFEE FARMS Cafe & Bar, Tokyo","km":{"ueno":3.0,"shibuya":6.6},"d":"Cafe and bar"},{"n":"Yushukan Museum","c":"see","a":"Jimbocho + Kanda","city":"tokyo","note":"","q":"Yushukan Museum, Japan, 〒102-8246 Tokyo, Chiyoda City, Kudankita, 3 Chome−1−1 靖國神社","km":{"ueno":3.1,"shibuya":5.5},"d":"Military history museum at Yasukuni"},{"n":"Nobunaga Ramen Restaurant","c":"eat","a":"Elsewhere in Tokyo","city":"tokyo","note":"","q":"Nobunaga Ramen Restaurant, 2 Chome-13-14 Nihonbashikayabacho, Chuo City, Tokyo 103-0025, Japan","km":{"ueno":3.2,"shibuya":7.2},"d":"Ramen"},{"n":"COMME des GARCONS Marunouchi Store","c":"shop","a":"Ginza + Marunouchi","city":"tokyo","note":"","q":"COMME des GARCONS Marunouchi Store, 2 Chome-1-1 Marunouchi, Chiyoda City, Tokyo 100-0005, Japan","km":{"ueno":3.4,"shibuya":5.7},"d":"Japanese designer clothing"},{"n":"and wander Marunouchi","c":"shop","a":"Ginza + Marunouchi","city":"tokyo","note":"","q":"and wander Marunouchi, Shin-Tokyo Building, 3 Chome-3-1 Marunouchi, Chiyoda City, Tokyo 100-0005, Japan","km":{"ueno":3.5,"shibuya":5.6},"d":"Japanese outdoor clothing"},{"n":"Ginza Sen-ryo Sushi Bar","c":"eat","a":"Ginza + Marunouchi","city":"tokyo","note":"","q":"Ginza Sen-ryo Sushi Bar, Japan, 〒104-0061 Tokyo, Chuo City, Ginza, 1 Chome−8−19 キラリトギンザ ６Ｆ","km":{"ueno":3.7,"shibuya":6.0},"d":"Sushi bar"},{"n":"Kitagawa","c":"eat","a":"Ginza + Marunouchi","city":"tokyo","note":"","q":"Kitagawa, Japan, 〒104-0061 Tokyo, Chuo City, Ginza, 2 Chome−10−11 マロニエ通り銀座 館3階","km":{"ueno":4.0,"shibuya":5.9},"d":"Japanese restaurant"},{"n":"Ginhachidon ginza","c":"eat","a":"Ginza + Marunouchi","city":"tokyo","note":"","q":"Ginhachidon ginza, Japan, 〒104-0061 Tokyo, Chuo City, 2 Chome−9−12 ＧＩＮＺＡ―２","km":{"ueno":3.9,"shibuya":5.9},"d":"Rice bowls"},{"n":"COMME des GARCONS JUNYA WATANABE MAN / Homme","c":"shop","a":"Ginza + Marunouchi","city":"tokyo","note":"","q":"COMME des GARCONS JUNYA WATANABE MAN / Homme, 2 Chome-5-1 Yurakucho, Chiyoda City, Tokyo 100-0006, Japan","km":{"ueno":3.9,"shibuya":5.5},"d":"Japanese designer menswear"},{"n":"Tsujita Ginza","c":"eat","a":"Ginza + Marunouchi","city":"tokyo","note":"","q":"Tsujita Ginza, Tokyo","km":{"ueno":4.1,"shibuya":5.8},"d":"Tsukemen"},{"n":"Comme des Garçons","c":"shop","a":"Ginza + Marunouchi","city":"tokyo","note":"","q":"Comme des Garçons, 4 Chome-6-16 Ginza, 中央区 Chuo City, Tokyo 104-0061, Japan","km":{"ueno":4.1,"shibuya":5.7},"d":"Japanese designer womenswear"},{"n":"Sumibi Yakiniku Nakahara","c":"eat","a":"Elsewhere in Tokyo","city":"tokyo","note":"Very hard to book","q":"Sumibi Yakiniku Nakahara, Japan, 〒102-0085 Tokyo, Chiyoda City, Rokubancho, 4-3 ＧＥＭＳ市ヶ谷 ９F","km":{"ueno":4.1,"shibuya":4.5},"d":"Charcoal yakiniku"},{"n":"Tempura Abe Honten","c":"eat","a":"Ginza + Marunouchi","city":"tokyo","note":"","q":"Tempura Abe Honten, Japan, 〒104-0061 Tokyo, Chuo City, Ginza, 4 Chome−3−7 スバルビル 地下1階","km":{"ueno":4.0,"shibuya":5.6},"d":"Tempura"},{"n":"Bar Otofuke","c":"drink","a":"Elsewhere in Tokyo","city":"tokyo","note":"","q":"Bar Otofuke, Tokyo","km":{"ueno":4.1,"shibuya":8.7},"d":"Bar"},{"n":"Rare Tendon Ginza Mitsuyoshi","c":"eat","a":"Ginza + Marunouchi","city":"tokyo","note":"","q":"Rare Tendon Ginza Mitsuyoshi, Japan, 〒104-0061 Tokyo, Chuo City, Ginza, 6 Chome−3−15 昭和イーティングビル １階","km":{"ueno":4.2,"shibuya":5.3},"d":"Tempura rice bowls"},{"n":"High Five","c":"drink","a":"Ginza + Marunouchi","city":"tokyo","note":"","q":"High Five, Japan, 〒104-0061 Tokyo, Chuo City, Ginza, 5 Chome−4−15 Efflore Ginza5 Bldg, B1F","km":{"ueno":4.1,"shibuya":5.4},"d":"Classic cocktail bar"},{"n":"Ginza Kagari - Soba","c":"eat","a":"Ginza + Marunouchi","city":"tokyo","note":"","q":"Ginza Kagari - Soba, 6 Chome-4-12 Ginza, Chuo City, Tokyo 104-0061, Japan","km":{"ueno":4.2,"shibuya":5.3},"d":"Creamy chicken ramen"},{"n":"Ginza Hachigou","c":"eat","a":"Ginza + Marunouchi","city":"tokyo","note":"Michelin Bib ramen. Book on TableCheck","q":"Ginza Hachigou, Japan, 〒104-0061 Tokyo, Chuo City, Ginza, 3 Chome−14−2 第一はなぶさビル 1階","km":{"ueno":4.1,"shibuya":6.0},"d":"Michelin Bib ramen"},{"n":"Yakiniku Coco Nemaru","c":"eat","a":"Ginza + Marunouchi","city":"tokyo","note":"","q":"Yakiniku Coco Nemaru, Japan, 〒104-0061 Tokyo, Chuo City, Ginza, 6 Chome−3−18 ＬａＬａ Ｇｒａｎｄｅ GＩＮＺＡ １階","km":{"ueno":4.2,"shibuya":5.3},"d":"Yakiniku"},{"n":"Dover Street Market Ginza","c":"shop","a":"Ginza + Marunouchi","city":"tokyo","note":"","q":"Dover Street Market Ginza, 6 Chome-9-5 Ginza, Chuo City, Tokyo 104-0061, Japan","km":{"ueno":4.2,"shibuya":5.4},"d":"Designer department store"},{"n":"COMME des GARCONS","c":"shop","a":"Ginza + Marunouchi","city":"tokyo","note":"","q":"COMME des GARCONS, 6 Chome-9-5 Ginza, Chuo City, Tokyo 104-0061, Japan","km":{"ueno":4.2,"shibuya":5.4},"d":"Japanese designer clothing (inside DSM)"},{"n":"USHIGORO S. GINZA","c":"eat","a":"Ginza + Marunouchi","city":"tokyo","note":"","q":"USHIGORO S. GINZA, Japan, 〒104-0061 Tokyo, Chuo City, Ginza, 7 Chome−7−7 Ginza 777 Adc Building, 6階","km":{"ueno":4.4,"shibuya":5.3},"d":"High-end yakiniku"},{"n":"Kyūshū Jangara Ginza","c":"eat","a":"Ginza + Marunouchi","city":"tokyo","note":"","q":"Kyūshū Jangara Ginza, 6 Chome-12-17 Ginza, Chuo City, Tokyo 104-0061, Japan","km":{"ueno":4.3,"shibuya":5.5},"d":"Kyushu-style tonkotsu ramen"},{"n":"Monja Daruma (Tsukishima)","c":"eat","a":"Ginza + Marunouchi","city":"tokyo","note":"Two stops from teamLab Planets","q":"Monja Daruma (Tsukishima), 3 Chome-17-9 Tsukishima, Chuo City, Tokyo 104-0052, Japan","km":{"ueno":5.0,"shibuya":6.8},"d":"Monjayaki on Monja Street"},{"n":"Yakiniku Jumbo Hanare","c":"eat","a":"Ueno + Hongo","city":"tokyo","note":"Top yakiniku. Reserve","q":"Yakiniku Jumbo Hanare, 3-27-9 Hongo, Bunkyo, Tokyo","km":{"ueno":1.2,"shibuya":7.5},"d":"Famous yakiniku"},{"n":"Ameyoko","c":"eat","a":"Ueno + Hongo","city":"tokyo","note":"Street food market","q":"Ameyoko Shopping Street, Ueno, Tokyo","km":{"ueno":0.3,"shibuya":8.6},"d":"Street market and food stalls"},{"n":"Ginza Katsukami","c":"eat","a":"Ginza + Marunouchi","city":"tokyo","note":"Tonkatsu. Book on TableCheck","q":"Ginza Katsukami, 5-6-10 Ginza, Tokyo","km":{"ueno":4.1,"shibuya":5.5},"d":"Tonkatsu"},{"n":"Torisawa Nakameguro","c":"eat","a":"Ebisu + Daikanyama + Nakameguro","city":"tokyo","note":"Yakitori. Book on Omakase","q":"Torisawa Nakameguro, Tokyo","km":{"ueno":9.8,"shibuya":1.5},"d":"Yakitori"},{"n":"Shin Udon","c":"eat","a":"Shinjuku","city":"tokyo","note":"Long lines","q":"Shin Udon, Yoyogi, Shibuya, Tokyo","km":{"ueno":7.2,"shibuya":3.1},"d":"Udon, long lines"},{"n":"Tonkatsu Hinata","c":"eat","a":"Elsewhere in Tokyo","city":"tokyo","note":"Takadanobaba. Off route","q":"Tonkatsu Hinata, 2-13-9 Takadanobaba, Tokyo","km":{"ueno":6.0,"shibuya":6.2},"d":"Tonkatsu"},{"n":"Gyukatsu Motomura","c":"eat","a":"Elsewhere in Tokyo","city":"tokyo","note":"Chain. Use the branch nearest you","q":"Gyukatsu Motomura, Tokyo","d":"Beef cutlet you finish on a hot stone"},{"n":"Yakitori Kato","c":"eat","a":"Location to confirm","city":"tokyo","note":"Reservations recommended","q":"Yakitori Kato Tokyo, Tokyo","d":"Yakitori"},{"n":"The Innocent Carvery","c":"eat","a":"Location to confirm","city":"tokyo","note":"Steak and teppanyaki","q":"The Innocent Carvery Tokyo, Tokyo","d":"Steak and teppanyaki"},{"n":"Teppanyaki Iwakura","c":"eat","a":"Location to confirm","city":"tokyo","note":"Teppanyaki","q":"Teppanyaki Iwakura Tokyo, Tokyo","d":"Teppanyaki"},{"n":"JO","c":"eat","a":"Location to confirm","city":"tokyo","note":"Michelin-starred yakiniku. Lunch course","q":"JO yakiniku Tokyo, Tokyo","d":"Yakiniku"},{"n":"Atlantis Vintage Ginza","c":"shop","a":"Ginza + Marunouchi","city":"tokyo","note":"Pre-loved luxury, men's","q":"Atlantis Vintage Ginza, 8-7-2 Ginza, Tokyo","km":{"ueno":4.6,"shibuya":5.1},"d":"Pre-loved luxury, men's"},{"n":"Atlantis Vintage Hiroo","c":"shop","a":"Ebisu + Daikanyama + Nakameguro","city":"tokyo","note":"Pre-loved luxury bags","q":"Atlantis Vintage Hiroo, 5-2-24 Hiroo, Tokyo","km":{"ueno":7.9,"shibuya":1.5},"d":"Pre-loved luxury bags"},{"n":"Isetan Shinjuku","c":"shop","a":"Shinjuku","city":"tokyo","note":"Guest card gets an extra 5% tax-free","q":"Isetan Shinjuku, Tokyo","km":{"ueno":6.5,"shibuya":3.9},"d":"Department store"},{"n":"Ootake","c":"eat","a":"Okazaki + Philosopher's Path","city":"kyoto","note":"Hamburg steak. Two addresses listed, confirm","q":"肉洋食オオタケ 京都, Kyoto","km":{"kyoto":1.2},"d":"Hamburg steak and Western-style meat dishes"}];
+</script>
+<script>
+(() => {
+  const STAYS = window.STAYS, DAYS = window.DAYS, PLACES = window.PLACES;
+  const CATS = [["all","All"],["eat","Eat"],["drink","Drink"],["coffee","Coffee"],["shop","Shop"],["see","See"]];
+  const CAT_LABEL = Object.fromEntries(CATS);
+  const TAG_LABEL = { booked: "Booked", reserve: "Book ahead", optional: "Optional" };
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+  const maps = q => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
+
+  const todayJST = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Tokyo" }).format(new Date());
+  const todayDay = DAYS.find(d => d.date === todayJST);
+  const saved = JSON.parse(localStorage.getItem("japan-state") || "{}");
+  const state = {
+    stay: todayDay ? todayDay.stay : (saved.stay || STAYS[0].id),
+    view: saved.view || "plan",
+    cat: saved.cat || "all",
+    open: new Set(todayDay ? [todayDay.date] : (saved.open || []))
+  };
+  const persist = () => localStorage.setItem("japan-state", JSON.stringify({ stay: state.stay, view: state.view, cat: state.cat, open: [...state.open] }));
+
+  function fmtDate(iso) {
+    const d = new Date(iso + "T12:00:00+09:00");
+    return {
+      day: d.toLocaleDateString("en-US", { day: "numeric", timeZone: "Asia/Tokyo" }),
+      rest: d.toLocaleDateString("en-US", { weekday: "short", month: "short", timeZone: "Asia/Tokyo" })
+    };
+  }
+
+  function itemHTML(it) {
+    const tag = it.tag ? `<span class="tag ${it.tag}">${TAG_LABEL[it.tag]}</span>` : "";
+    const go = it.q ? `<a class="go" href="${maps(it.q)}" target="_blank" rel="noopener">Map</a>` : "";
+    const d = it.d || it.note;
+    const sug = it.s === "sug";
+    const src = sug ? `<div class="src sug">Suggested</div>` : "";
+    return `<div class="item${sug ? " is-sug" : ""}"><div class="item-main">${src}<div class="item-name">${it.e ? `<span class="emo" aria-hidden="true">${it.e}</span>` : ""}${esc(it.n)}${tag}</div>${d ? `<div class="item-d">${esc(d)}</div>` : ""}</div>${go}</div>`;
+  }
+
+  function distHTML(p, hotel) {
+    const k = p.km && p.km[hotel];
+    if (k == null) return "";
+    const walk = Math.max(1, Math.round(k * 13));
+    return k <= 2.5 ? `${k.toFixed(1)} km · about ${walk} min walk` : `${k.toFixed(1)} km from hotel`;
+  }
+
+  function renderStays() {
+    $("#stays").innerHTML = STAYS.map(s =>
+      `<button class="stay" data-stay="${s.id}" aria-pressed="${s.id === state.stay}"><b>${esc(s.label)}</b><span>${esc(s.sub)}</span></button>`).join("");
+  }
+
+  function renderPlan() {
+    const days = DAYS.filter(d => d.stay === state.stay).sort((x, y) => x.date.localeCompare(y.date));
+    return days.map(d => {
+      const f = fmtDate(d.date);
+      const isToday = d.date === todayJST;
+      const open = state.open.has(d.date);
+      const tods = [["Morning", d.morning], ["Afternoon", d.afternoon], ["Evening", d.evening]]
+        .filter(([, items]) => items && items.length)
+        .map(([label, items]) => `<section class="tod"><h3>${label}</h3>${items.map(itemHTML).join("")}</section>`).join("");
+      return `<article class="day${open ? " open" : ""}" id="d-${d.date}">
+        <button class="day-head" data-day="${d.date}" aria-expanded="${open}">
+          <div class="day-date"><b>${f.day}</b>${f.rest}</div>
+          <div class="day-title">${esc(d.title)}${isToday ? '<span class="today-pill">Today</span>' : ""}${wxHTML(d)}</div>
+          <span class="chev">›</span>
+        </button>
+        <div class="day-body">${d.travel ? `<div class="travel">${esc(d.travel)}</div>` : ""}${tods}</div>
+      </article>`;
+    }).join("");
+  }
+
+  function renderNearby() {
+    const stay = STAYS.find(s => s.id === state.stay);
+    const chips = `<div class="chips">${CATS.map(([k, l]) => `<button class="chip" data-cat="${k}" aria-pressed="${k === state.cat}">${l}</button>`).join("")}</div>`;
+    const list = PLACES.filter(p => p.city === stay.city && (state.cat === "all" || p.c === state.cat));
+    if (!stay.areas.length || !list.length) {
+      return chips + `<div class="empty">Nothing saved for ${esc(stay.label)}. Use the day plan.</div>`;
+    }
+    const order = ["eat", "drink", "coffee", "shop", "see"];
+    const body = stay.areas.map(a => {
+      const dk = p => (p.km && p.km[stay.hotel] != null) ? p.km[stay.hotel] : 999;
+      const ps = list.filter(p => p.a === a).sort((x, y) => (order.indexOf(x.c) - order.indexOf(y.c)) || (dk(x) - dk(y)));
+      if (!ps.length) return "";
+      return `<section class="area"><h2>${esc(a)}</h2>${ps.map(p => {
+        const cat = state.cat === "all" ? `<span class="cat">${CAT_LABEL[p.c]}</span>` : "";
+        const dist = distHTML(p, stay.hotel);
+        return `<div class="item"><div class="item-main"><div class="item-name">${esc(p.n)}${cat}</div>${p.d ? `<div class="item-d">${esc(p.d)}</div>` : ""}${p.note ? `<div class="item-note">${esc(p.note)}</div>` : ""}${dist ? `<div class="item-dist">${dist}</div>` : ""}</div><a class="go" href="${maps(p.q)}" target="_blank" rel="noopener">Map</a></div>`;
+      }).join("")}</section>`;
+    }).join("");
+    return chips + body;
+  }
+
+  // Daily forecast from Open-Meteo (free, no key). Cached so it still shows offline.
+  const WX_STAY = { tokyo1: [35.71, 139.78], kyoto: [35.01, 135.76], kanazawa: [36.56, 136.65], tokyo2: [35.66, 139.70] };
+  const WX_DAY = { "2026-11-29": [34.68, 135.84], "2026-12-03": [34.84, 134.69], "2026-12-06": [36.25, 136.37] };
+  const wxLoc = d => WX_DAY[d.date] || WX_STAY[d.stay];
+  let WX = JSON.parse(localStorage.getItem("japan-wx") || "{}");
+  function wxHTML(d) {
+    const w = WX.days && WX.days[d.date];
+    if (!w) return `<span class="wx">Forecast shows up about two weeks out</span>`;
+    const rain = w.p == null ? "" : ` · <span class="rain">${w.p}% rain</span>`;
+    return `<span class="wx">High ${w.hi}° · Low ${w.lo}°F${rain}</span>`;
+  }
+  async function loadWx() {
+    if (WX.at && Date.now() - WX.at < 3 * 3600e3) return;
+    const locs = [], keyOf = {};
+    DAYS.forEach(d => { const k = wxLoc(d).join(","); if (!(k in keyOf)) { keyOf[k] = locs.length; locs.push(wxLoc(d)); } });
+    const url = "https://api.open-meteo.com/v1/forecast?latitude=" + locs.map(l => l[0]).join(",") +
+      "&longitude=" + locs.map(l => l[1]).join(",") +
+      "&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FTokyo&temperature_unit=fahrenheit&forecast_days=16";
+    try {
+      const r = await fetch(url); if (!r.ok) return;
+      let j = await r.json(); if (!Array.isArray(j)) j = [j];
+      const days = {};
+      DAYS.forEach(d => {
+        const daily = j[keyOf[wxLoc(d).join(",")]]?.daily; if (!daily) return;
+        const i = daily.time.indexOf(d.date); if (i < 0) return;
+        const hi = daily.temperature_2m_max[i], lo = daily.temperature_2m_min[i];
+        if (hi == null || lo == null) return;
+        days[d.date] = { hi: Math.round(hi), lo: Math.round(lo), p: daily.precipitation_probability_max[i] };
+      });
+      WX = { at: Date.now(), days: { ...(WX.days || {}), ...days } };
+      localStorage.setItem("japan-wx", JSON.stringify(WX));
+      render();
+    } catch (e) { /* offline: keep cached forecast */ }
+  }
+
+  // Everything tagged "Book ahead", split into meals and events.
+  function toBook() {
+    const out = [];
+    DAYS.forEach(d => [["Morning", d.morning], ["Afternoon", d.afternoon], ["Evening", d.evening]].forEach(([tod, items]) =>
+      (items || []).forEach(it => { if (it.tag === "reserve") out.push({ ...it, date: d.date, tod }); })));
+    return out.sort((a, b) => a.date.localeCompare(b.date));
+  }
+  function renderBooking() {
+    const all = toBook();
+    if (!all.length) return `<div class="empty">Nothing left to book.</div>`;
+    const meals = all.filter(i => i.e === "🍽️"), events = all.filter(i => i.e !== "🍽️");
+    const row = it => {
+      const f = fmtDate(it.date);
+      const sug = it.s === "sug" ? `<div class="src sug">Suggested</div>` : "";
+      const go = it.q ? `<a class="go" href="${maps(it.q)}" target="_blank" rel="noopener">Map</a>` : "";
+      return `<div class="item"><div class="item-main">${sug}<div class="item-name">${it.e ? `<span class="emo" aria-hidden="true">${it.e}</span>` : ""}${esc(it.n)}</div>${it.d ? `<div class="item-d">${esc(it.d)}</div>` : ""}<div class="bk-when">${new Date(it.date + "T12:00:00+09:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "Asia/Tokyo" })} · ${it.tod}</div></div>${go}</div>`;
+    };
+    const group = (title, list) => list.length ? `<section class="bk-group"><h2>${title} · ${list.length}</h2>${list.map(row).join("")}</section>` : "";
+    return `<div class="bk-intro">Everything tagged Book ahead that isn't booked yet.</div>` + group("Events", events) + group("Meals", meals);
+  }
+
+  function render() {
+    renderStays();
+    const booking = state.stay === "booking";
+    const n = toBook().length;
+    const bt = $("#bookTab");
+    bt.setAttribute("aria-pressed", booking);
+    bt.innerHTML = `<b>Needs booking</b><span>${n ? n + " left" : "All done"}</span>`;
+    document.querySelector(".views").hidden = booking;
+    document.querySelectorAll(".view").forEach(b => b.setAttribute("aria-pressed", b.dataset.view === state.view));
+    $("#main").innerHTML = (booking ? renderBooking() : state.view === "plan" ? renderPlan() : renderNearby()) + `<div class="foot">Saved for offline use after first load.</div>`;
+    $("#todayBtn").hidden = !todayDay || (state.stay === todayDay.stay && state.view === "plan");
+    persist();
+  }
+
+  document.addEventListener("click", e => {
+    const t = e.target.closest("[data-stay],[data-view],[data-day],[data-cat],#todayBtn");
+    if (!t) return;
+    if (t.dataset.stay) { state.stay = t.dataset.stay; window.scrollTo(0, 0); }
+    else if (t.dataset.view) { state.view = t.dataset.view; window.scrollTo(0, 0); }
+    else if (t.dataset.cat) { state.cat = t.dataset.cat; }
+    else if (t.dataset.day) {
+      const id = t.dataset.day;
+      state.open.has(id) ? state.open.delete(id) : state.open.add(id);
+    } else if (t.id === "todayBtn") {
+      state.stay = todayDay.stay; state.view = "plan"; state.open.add(todayDay.date);
+      render(); document.getElementById("d-" + todayDay.date)?.scrollIntoView({ block: "start" }); return;
+    }
+    render();
+  });
+
+  render();
+  loadWx();
+  if (todayDay && state.view === "plan") document.getElementById("d-" + todayDay.date)?.scrollIntoView({ block: "start" });
+
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("/japan/sw.js", { scope: "/japan/" }).catch(() => {});
+})();
+</script>
+</body>
+</html>
