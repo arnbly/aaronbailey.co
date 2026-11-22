@@ -1,0 +1,1 @@
+{ "name": "Japan 2026", "short_name": "Japan", "start_url": "/japan/", "scope": "/japan/", "display": "standalone", "background_color": "#F7F2EA", "theme_color": "#F7F2EA", "icons": [{ "src": "/japan/icon.svg", "sizes": "any", "type": "image/svg+xml" }] }
