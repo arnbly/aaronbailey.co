@@ -30,16 +30,17 @@ header { position: sticky; top: 0; z-index: 10; background: rgba(247,242,234,.94
 .top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 h1 { font-size: 20px; font-weight: 500; margin: 0; letter-spacing: -0.01em; }
 .today-btn { font-size: 13px; color: var(--accent-ink); font-weight: 500; }
-.stay-row { display: flex; align-items: stretch; gap: 6px; margin: 10px -16px 0; padding: 0 16px 10px 0; }
-.stays { flex: 1; min-width: 0; display: flex; gap: 6px; overflow-x: auto; padding-left: 16px; scrollbar-width: none; }
-.stay.pin { flex: 0 0 auto; border-color: var(--reserve); color: var(--reserve); }
-.stay.pin span { color: var(--reserve); }
-.stay.pin[aria-pressed="true"] { background: var(--reserve); border-color: var(--reserve); color: #fff; }
-.stay.pin[aria-pressed="true"] span { color: #F3DDD2; }
+.stays { display: flex; gap: 6px; overflow-x: auto; margin: 10px -16px 0; padding: 0 16px 10px; scrollbar-width: none; }
+.top { align-items: center; }
+.top-actions { display: flex; align-items: center; gap: 12px; }
+.book-btn { width: 32px; height: 32px; display: grid; place-items: center; border: 1px solid var(--border); border-radius: 8px; color: var(--text); }
+.book-btn[aria-pressed="true"] { background: var(--text); border-color: var(--text); color: var(--bg); }
 .views[hidden] { display: none; }
 .bk-group { margin-top: 18px; }
 .bk-group h2 { font-size: 13px; font-weight: 500; margin: 0 0 2px; color: var(--accent-ink); letter-spacing: .02em; }
 .bk-when { font-size: 12px; color: var(--faint); margin-top: 3px; }
+.bk-title { font-size: 18px; font-weight: 500; margin: 16px 0 0; }
+.bk-intro { padding-top: 4px !important; }
 .bk-intro { font-size: 14px; color: var(--muted); padding-top: 14px; }
 .stays::-webkit-scrollbar { display: none; }
 .stay { flex: 0 0 auto; text-align: left; padding: 7px 12px; border: 1px solid var(--border); border-radius: 10px; background: transparent; }
@@ -76,6 +77,9 @@ main { padding: 8px 16px 48px; max-width: 640px; margin: 0 auto; }
 .tag { display: inline-block; font-size: 11px; font-weight: 500; letter-spacing: .03em; padding: 1px 7px; border-radius: 99px; margin-left: 6px; vertical-align: 1px; border: 1px solid currentColor; }
 .tag.booked { color: var(--booked); }
 .tag.reserve { color: var(--reserve); }
+.tag.decide { color: var(--accent-ink); }
+.tag.find { color: var(--accent-ink); border-style: dashed; }
+.tag.walkin { color: #3C6E91; }
 .tag.optional { color: var(--faint); }
 .src { display: inline-block; font-size: 10px; font-weight: 500; letter-spacing: .09em; text-transform: uppercase; margin-bottom: 1px; }
 .src.sug { color: var(--accent-ink); }
@@ -106,12 +110,14 @@ main { padding: 8px 16px 48px; max-width: 640px; margin: 0 auto; }
 <header>
   <div class="top">
     <h1>Japan</h1>
-    <button class="today-btn" id="todayBtn" hidden>Jump to today</button>
+    <div class="top-actions">
+      <button class="today-btn" id="todayBtn" hidden>Jump to today</button>
+      <button class="book-btn" id="bookTab" data-stay="booking" aria-label="Needs booking" title="Needs booking">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/></svg>
+      </button>
+    </div>
   </div>
-  <div class="stay-row">
-    <nav class="stays" id="stays" aria-label="Stay"></nav>
-    <button class="stay pin" id="bookTab" data-stay="booking"></button>
-  </div>
+  <nav class="stays" id="stays" aria-label="Stay"></nav>
   <div class="views" role="group" aria-label="View">
     <button class="view" data-view="plan" aria-pressed="true">Day by day</button>
     <button class="view" data-view="nearby" aria-pressed="false">Nearby</button>
@@ -133,27 +139,27 @@ window.STAYS = [
 // s: "sug" marks items added from the saved lists. Everything else is from the original itinerary.
 window.DAYS = [
   { date: "2026-11-26", stay: "tokyo1", title: "Arrive Tokyo",
-    travel: "Land at Narita 12:45. Keisei Skyliner to Keisei-Ueno, about 45 min, ¥2,580, every 20 min.",
-    morning: [ { n: "Clear immigration", e: "🛂" } ],
+    morning: [],
     afternoon: [
+      { n: "ZG 21 · Vancouver 10:30 → Narita 12:45", e: "✈️", d: "ZIPAIR. Leaves Vancouver Wed Nov 25, about 10h15 in the air, lands Thu Nov 26. Meals and 15 kg carry-on prepaid.", tag: "booked" },
+      { n: "Clear immigration", e: "🛂" },
+      { n: "Keisei Skyliner to Keisei-Ueno", e: "🚄", d: "About 45 min, ¥2,580, every 20 min. Buy tickets at the Keisei counter in arrivals." },
       { n: "Check in: Dormy Inn Ueno Okachimachi", e: "🏨", d: "6-7-22 Ueno, Taito City, Tokyo 110-0005 · 東京都台東区上野6-7-22. 5 min walk from Keisei-Ueno.", q: "東京都台東区上野6-7-22", tag: "booked" },
       { n: "Ueno Park + Shinobazu Pond", e: "🌳", d: "Tokyo's big museum park. Shinobazu Pond has a temple on an island and lotus beds. Sunset around 16:30.", q: "Shinobazu Pond, Ueno, Tokyo" },
       { n: "Kappabashi kitchen street", e: "🛍️", d: "Tokyo's kitchen supply street: knives, ceramics, brushes and plastic food samples. Saved shops: Kanaya Brush, Tokyo Biken (knives), Hashitou (chopsticks). Shops close around 17:00, so only if you land on time.", q: "Kappabashi Kitchen Street, Tokyo", s: "sug" }
     ],
     evening: [
-      { n: "Ameyoko", e: "🍽️", d: "Busy market street under the train tracks, with food stalls and standing bars. Early dinner, 1 min from the hotel.", q: "Ameyoko Shopping Street, Ueno, Tokyo" },
+      { n: "Dinner: Ameyoko", e: "🍽️", d: "Busy market street under the train tracks, with food stalls and standing bars. 1 min from the hotel.", q: "Ameyoko Shopping Street, Ueno, Tokyo", walkin: true },
       { n: "Hotel bath + sauna", e: "♨️", d: "Top-floor bath, sauna and cold plunge. Free late-night soba." },
       { n: "Senso-ji at night", e: "🛕", d: "Tokyo's oldest temple, founded in 645. After dark the crowds thin out and the main hall and five-story pagoda are lit up. 8 min on the Ginza line. Grounds open 24h, lit until 23:00. Main hall closes at 17:00.", q: "Senso-ji, Asakusa, Tokyo", tag: "optional" },
-      { n: "If in Asakusa, eat there", e: "🍽️", d: "Asakusa Monja Zenya (monjayaki), Wagyu Sukiyaki Goku by Kaminarimon, or Asakusa Menchi (must try, check closing time).", q: "Asakusa Monja Zenya, Tokyo", s: "sug" }
     ] },
 
   { date: "2026-11-27", stay: "tokyo1", title: "National Museum, Rikugien",
     morning: [ { n: "Kappabashi kitchen street", e: "🛍️", d: "Tokyo's kitchen supply street: knives, ceramics, brushes and plastic food samples. About 15 min walk from the hotel. Saved shops: Kanaya Brush, Tokyo Biken (knives), Hashitou (chopsticks). Most shops open around 10:00.", q: "Kappabashi Kitchen Street, Tokyo", tag: "optional" } ],
     afternoon: [ { n: "Tokyo National Museum", e: "🏛️", d: "Japan's largest collection of Japanese art. Honkan covers ceramics, swords and screens; Toyokan covers the rest of Asia. 15 to 18 min walk through the park, 2 to 3 hrs. Open until 20:00 some Fridays.", q: "Tokyo National Museum" } ],
     evening: [
-      { n: "Dinner near Komagome Station", e: "🍽️", d: "Before Rikugien." },
       { n: "Rikugien illumination", e: "🌳", d: "Edo-period stroll garden built around a pond, with the maples lit up at night. Okachimachi to Komagome on the Yamanote, about 11 min. Main gate is 7 to 8 min from the station. 18:00 to 20:30, last entry 19:30.", q: "Rikugien Main Gate, Tokyo", tag: "booked" },
-      { n: "Or dinner after: Yakiniku Jumbo Hanare", e: "🍽️", d: "Komagome to Todaimae on the Namboku line, short walk. About 20 min on foot back to the hotel.", q: "Yakiniku Jumbo Hanare, 3-27-9 Hongo, Bunkyo, Tokyo", tag: "reserve", s: "sug" }
+      { n: "Dinner: Taruhei (樽平)", e: "🍽️", d: "Robatayaki izakaya, open 50 years, known for charcoal-grilled fish, plus chicken and vegetables. After Rikugien: Yamanote back to Okachimachi, then a few min on foot. 1 min from Ueno Hirokoji Station. Friday hours 16:30 to 23:30, last order 23:00. Smoking is allowed inside.", q: "樽平 東京都文京区湯島3-40-7", walkin: true }
     ] },
 
   { date: "2026-11-28", stay: "kyoto", title: "To Kyoto",
@@ -165,15 +171,17 @@ window.DAYS = [
     afternoon: [
       { n: "Nozomi 33 · Tokyo 12:30 → Kyoto 14:44", e: "🚄", d: "Green car. Car 9, seats 3-C and 3-D. Smart EX.", tag: "booked" },
       { n: "Check in: Kyoto hotel", e: "🏨", d: "245-2 Kurumayacho, Nakagyo-ku, Kyoto · 京都府京都市中京区車屋町245-2.", q: "京都府京都市中京区車屋町245-2", tag: "booked" },
+      { n: "Ask the front desk to book dinner for Tue Dec 1", e: "🛎️", d: "Somewhere nice for that night, no meat (fish is fine). Ask today so they have time to find a table." },
       { n: "Nishiki Market + Weekenders Coffee", e: "🍽️", d: "Narrow covered market street, 400 years old, with pickles, tofu, knives and street snacks. Many stalls close around 17:00, so go soon after check-in. Weekenders is a small specialty roaster nearby.", q: "Nishiki Market, Kyoto" },
       { n: "Shops near the market", e: "🛍️", d: "D&DEPARTMENT Kyoto (inside Bukko-ji), Kyukyodo (incense and paper), Nomura Tailor (fabric).", q: "D&DEPARTMENT KYOTO", s: "sug" }
     ],
     evening: [
       { n: "Kamo River at dusk", e: "🚶", d: "The river through central Kyoto. Walk the banks between Shijo and Sanjo bridges as the lights come on.", q: "Kamo River, Shijo, Kyoto" },
       { n: "Kiyomizu-dera evening illumination", e: "🛕", d: "Hillside temple with a huge wooden stage over the trees. In autumn it opens at night with the maples lit up.", q: "Kiyomizu-dera, Kyoto", tag: "optional" },
-      { n: "If at Kiyomizu, eat in Gion", e: "🍽️", d: "Gion Duck Noodles, Gyoza Hohei, or Gion Tanto (okonomiyaki).", q: "Gion Duck Noodles, Kyoto", s: "sug" },
-      { n: "Otherwise dinner: Katsukura", e: "🍽️", d: "Tonkatsu, walk-in, near the hotel.", q: "Katsukura Shijo Higashinotoin, Kyoto", s: "sug" },
-      { n: "Drinks on Kiyamachi", e: "🍸", d: "L'Escamoteur, The Common One Bar, Jam House.", q: "L'Escamoteur, Kyoto", s: "sug" }
+      { n: "Option A: Gion, if you go to Kiyomizu", e: "🍽️", d: "Gion Duck Noodles (duck ramen), Gyoza Hohei (tiny gyoza counter), or Gion Tanto (okonomiyaki).", q: "Gion Duck Noodles, Kyoto", tag: "decide", s: "sug" },
+      { n: "Option B: Katsukura", e: "🍽️", d: "Tonkatsu (breaded pork cutlet) near the hotel.", q: "Katsukura Shijo Higashinotoin, Kyoto", tag: "decide", s: "sug", walkin: true },
+      { n: "Drinks on Kiyamachi", e: "🍸", d: "L'Escamoteur, The Common One Bar, Jam House.", q: "L'Escamoteur, Kyoto", s: "sug" },
+      { n: "Calvador", e: "🍸", d: "Eight-seat counter bar on the second floor, run by owner Mr. Takayama and well loved for his hospitality and deep spirits list. About 1 km from the hotel, near Kyoto Shiyakusho-mae. Open 19:00 to 23:00 (closed Wed and Thu). ¥1,000 cover. Cards: JCB, Amex and Diners only, no Visa or Mastercard. Smoking allowed. Takes reservations, and with 8 seats it can fill up.", q: "Calvador 京都府京都市中京区妙満寺前町446", tag: "optional" }
     ] },
 
   { date: "2026-11-29", stay: "kyoto", title: "Nara day trip",
@@ -185,7 +193,7 @@ window.DAYS = [
     ],
     evening: [
       { n: "Back to Kyoto", e: "🚃" },
-      { n: "Dinner near the hotel", e: "🍽️", d: "Yakinikuya Masuichi (reserve) or Wajoryomen Sugari (tsukemen).", q: "Yakinikuya Masuichi SakaiNishiki, Kyoto", s: "sug" }
+      { n: "Dinner: Nijojo Furuta (二条城ふる田) 19:30", e: "🍽️", d: "Near Nijo Castle, about 1.5 km from the hotel. Oshikoji-dori Ogawa nishi-iru, Furushiro-cho 371 · 京都府京都市中京区押小路通小川西入ル古城町371. Table is held for 3 hours. Tel 075-254-8377.", q: "京都府京都市中京区古城町371", tag: "booked" }
     ] },
 
   { date: "2026-11-30", stay: "kyoto", title: "Tofuku-ji to Fushimi Inari",
@@ -197,11 +205,11 @@ window.DAYS = [
     ],
     evening: [
       { n: "Fushimi Inari, late afternoon", e: "⛩️", d: "Shrine with thousands of orange torii gates winding up the mountain. Fewer people late in the day. Open 24/7.", q: "Fushimi Inari Taisha, Kyoto" },
-      { n: "Dinner: Koyori", e: "🍽️", d: "Near Kiyomizu-dera.", q: "Koyori Kyoto Kiyomizu" }
+      { n: "Dinner: Gion Karyo (祇園迦陵) 19:00", e: "🍽️", d: "In Gion, across from the Gion Kobu Kaburenjo theater at the south end of Hanamikoji. From Fushimi Inari, the Keihan line to Gion-Shijo takes about 20 min. 京都府京都市東山区祇園町南側 祇園甲部歌舞練場前. Tel 075-532-0025.", q: "Gion Karyo 祇園迦陵", tag: "booked" }
     ] },
 
   { date: "2026-12-01", stay: "kyoto", title: "Northern Higashiyama",
-    morning: [ { n: "Guided private walk", e: "🚶", d: "Ask for history and architecture.", tag: "reserve" } ],
+    morning: [ { n: "Open morning", e: "🛋️" } ],
     afternoon: [
       { n: "Ginkaku-ji", e: "🛕", d: "The Silver Pavilion. A shogun's retreat turned Zen temple, with a raked sand garden and a moss garden climbing the hillside. Despite the name, it was never covered in silver.", q: "Ginkaku-ji, Kyoto" },
       { n: "Philosopher's Path + Honen-in", e: "🚶", d: "Stone path along a canal, about 2 km from Ginkaku-ji south toward Nanzen-ji. Honen-in is a quiet temple just off the path, with a thatched gate and raked sand mounds at the entrance.", q: "Philosopher's Path, Kyoto" },
@@ -211,7 +219,7 @@ window.DAYS = [
     ],
     evening: [
       { n: "Free", e: "🛋️", d: "Shorten this day if the week is running heavy." },
-      { n: "Dinner: Ootake", e: "🍽️", d: "Hamburg steak in Okazaki. Two addresses on the list, confirm before walking.", q: "肉洋食オオタケ 京都", s: "sug" }
+      { n: "Dinner: hotel-booked reservation", e: "🍽️", d: "The hotel will find a nice reservation for tonight. Request it at check-in on Sat Nov 28. Needs to work for no meat (fish is fine).", tag: "find" }
     ] },
 
   { date: "2026-12-02", stay: "kyoto", title: "Arashiyama + Saiho-ji",
@@ -228,7 +236,8 @@ window.DAYS = [
     ],
     evening: [
       { n: "Back to Kyoto", e: "🚃" },
-      { n: "Dinner near the hotel", e: "🍽️", d: "Kanegura or Ibushigin Kazuya (izakaya).", q: "KANEGURA, Kyoto", s: "sug" }
+      { n: "Option A: Kanegura", e: "🍽️", d: "Izakaya near the hotel.", q: "KANEGURA, Kyoto", tag: "decide", s: "sug" },
+      { n: "Option B: Ibushigin Kazuya", e: "🍽️", d: "Izakaya with smoked dishes, near the hotel.", q: "Ibushigin Kazuya, Kyoto", tag: "decide", s: "sug" }
     ] },
 
   { date: "2026-12-03", stay: "kyoto", title: "Himeji day trip",
@@ -240,7 +249,7 @@ window.DAYS = [
     ],
     evening: [
       { n: "Train back to Kyoto", e: "🚄" },
-      { n: "Dinner: Honke Daiichi-Asahi", e: "🍽️", d: "Ramen a few min from the Kyoto shinkansen gates.", q: "Honke Daiichi-Asahi, Kyoto", s: "sug" }
+      { n: "Dinner: Honke Daiichi-Asahi", e: "🍽️", d: "Kyoto-style ramen since 1947, a few min from the shinkansen gates.", q: "Honke Daiichi-Asahi, Kyoto", s: "sug", walkin: true }
     ] },
 
   { date: "2026-12-04", stay: "kanazawa", title: "Raku Museum, then Kanazawa",
@@ -249,7 +258,8 @@ window.DAYS = [
     afternoon: [ { n: "Kurasu coffee", e: "☕", d: "Near Kyoto Station, then the train.", q: "Kurasu Kyoto Stand" } ],
     evening: [
       { n: "Check in: Onyado Nono Kanazawa (御宿 野乃金沢)", e: "🏨", d: "1-1 Shimotsutsumicho, Kanazawa 920-0917 · 石川県金沢市下堤町1-1.", q: "御宿 野乃金沢", tag: "booked" },
-      { n: "National Crafts Museum or Ishikawa Prefectural Museum of Art", e: "🏛️", d: "The National Crafts Museum shows Japanese ceramics, lacquer, textiles and metalwork. The Prefectural Museum covers Kaga-region art and Kutani porcelain. Both open Friday, last entry 17:00.", q: "National Crafts Museum, Kanazawa" }
+      { n: "National Crafts Museum or Ishikawa Prefectural Museum of Art", e: "🏛️", d: "The National Crafts Museum shows Japanese ceramics, lacquer, textiles and metalwork. The Prefectural Museum covers Kaga-region art and Kutani porcelain. Both open Friday, last entry 17:00.", q: "National Crafts Museum, Kanazawa" },
+      { n: "Dinner: Jinjin Kanazawa (人人 金沢) 19:00", e: "🍽️", d: "Sushi in Katamachi, Kanazawa's main dining street. Katamachi 1-10-5 · 石川県金沢市片町1-10-5. Tel 076-213-7181.", q: "石川県金沢市片町1-10-5", tag: "booked" }
     ] },
 
   { date: "2026-12-05", stay: "kanazawa", title: "Kanazawa",
@@ -260,7 +270,7 @@ window.DAYS = [
     ],
     evening: [
       { n: "Higashi Chaya + Nagamachi", e: "🚶", d: "Higashi Chaya is a preserved geisha teahouse district of wooden facades. Nagamachi is the old samurai quarter, with earthen walls and canals.", q: "Higashi Chaya District, Kanazawa" },
-      { n: "Omakase dinner", e: "🍽️", d: "Sushi counter.", tag: "reserve" }
+      { n: "Dinner: walk around Owaricho", e: "🍽️", d: "Old merchant district near the hotel and Omicho Market. Wander and pick a spot that works for no meat.", q: "Owaricho, Kanazawa", walkin: true }
     ] },
 
   { date: "2026-12-06", stay: "kanazawa", title: "Kaga Onsen",
@@ -276,16 +286,15 @@ window.DAYS = [
       { n: "Hakutaka 562 · Kaga Onsen 11:37 → Tokyo 14:52", e: "🚄", d: "Reserved seats. Car 8, seats 13-D and 13-E.", tag: "booked" }
     ],
     afternoon: [
-      { n: "Drop bags at Tokyo Station", e: "🧳" },
-      { n: "Jimbocho book district", e: "📚", d: "Tokyo's used-book neighborhood, with over 100 bookstores. Ohya Shobo sells old maps and woodblock prints. Glitch Coffee is a top light-roast cafe.", q: "Ohya Shobo, Jimbocho, Tokyo" },
-      { n: "magnif", e: "📚", d: "Vintage magazines, on the Jimbocho walk.", q: "magnif, Jinbocho, Tokyo", s: "sug" },
-      { n: "Kokyo Gaien + Nijubashi view", e: "🏯", d: "The open plaza in front of the Imperial Palace, lined with pine trees. The classic view is the stone bridge over the moat with the palace gate and a watchtower behind it. About 20 min on foot. Free, always open. East Gardens closed Mondays.", q: "Nijubashi Bridge, Tokyo" }
+      { n: "Bags to the Shibuya hotel, about 15:00 to 15:30", e: "🧳", d: "Straight from Tokyo Station, about 25 min. Ask the front desk to hold them until check-in.", q: "東京都渋谷区渋谷3-21-3" },
+      { n: "Kokyo Gaien + Nijubashi view, about 16:00 to 16:30", e: "🏯", d: "The open plaza in front of the Imperial Palace, lined with pine trees. The classic view is the stone bridge over the moat with the palace gate and a watchtower behind it. Sunset is around 16:30, so this is the stop that can't slip. About 25 min from Shibuya. Free, always open.", q: "Nijubashi Bridge, Tokyo" },
+      { n: "Jimbocho book district, about 16:45 to 17:20", e: "📚", d: "Tokyo's used-book neighborhood, with over 100 bookstores. Ohya Shobo sells old maps and woodblock prints. Glitch Coffee is a top light-roast cafe. Leave by 17:20 to make Azabudai.", q: "Ohya Shobo, Jimbocho, Tokyo" },
+      { n: "magnif", e: "📚", d: "Vintage magazines, on the Jimbocho walk.", q: "magnif, Jinbocho, Tokyo", s: "sug" }
     ],
     evening: [
-      { n: "Early dinner in Kanda", e: "🍽️", d: "Kanda Matsuya (soba) or Kanda Ponchiken. Check Monday hours.", q: "Kanda Matsuya, Tokyo", s: "sug" },
-      { n: "teamLab Planets or Borderless", e: "🎨", q: "teamLab Planets Tokyo", tag: "reserve" },
-      { n: "If Planets: Monja Daruma after", e: "🍽️", d: "Tsukishima, two stops from Toyosu.", q: "Tsukishima Monja Daruma, Tokyo", s: "sug" },
-      { n: "Check in: Shibuya hotel", e: "🏨", d: "3-21-3 Shibuya, Shibuya City, Tokyo 150-0002 · 東京都渋谷区渋谷3-21-3. After teamLab. Collect your bags from Tokyo Station on the way.", q: "東京都渋谷区渋谷3-21-3", tag: "booked" }
+      { n: "teamLab Borderless 18:00", e: "🎨", d: "Azabudai Hills, on the way back to Shibuya. Walk-through digital art rooms. The 18:00 slot is the latest that still gives the full 3 hrs before close. Tickets are non-refundable and name-locked.", q: "teamLab Borderless Azabudai Hills", tag: "booked" },
+      { n: "Check in: Shibuya hotel, about 21:15", e: "🏨", d: "3-21-3 Shibuya, Shibuya City, Tokyo 150-0002 · 東京都渋谷区渋谷3-21-3. Bags are already there.", q: "東京都渋谷区渋谷3-21-3", tag: "booked" },
+      { n: "Late dinner in Shibuya", e: "🍽️", d: "After check-in, around 21:30. Walk in somewhere near the hotel that works for no meat.", walkin: true }
     ] },
 
   { date: "2026-12-08", stay: "tokyo2", title: "Komaba, Shimokitazawa, Shibuya Sky",
@@ -297,24 +306,24 @@ window.DAYS = [
       { n: "Gotokuji Temple", e: "🛕", d: "Small temple known as the home of the maneki-neko, the beckoning cat. Visitors leave thousands of white cat figurines here. Best in the late-afternoon light.", q: "Gotokuji Temple, Tokyo" }
     ],
     evening: [
-      { n: "Shibuya Sky 18:00", e: "🌆", d: "Open-air rooftop deck 229 m up on Shibuya Scramble Square, looking down on the crossing. Cold. Closes in high wind.", q: "Shibuya Sky", tag: "reserve" },
-      { n: "Consider the sunset slot", e: "🌆", d: "Your 18:00 slot is after dark (sunset is around 16:30), so you'll see the city lit up. A slot around 16:00 catches sunset, and Mt. Fuji on a clear day. Craft says slots open one week ahead, so a switch may still be possible.", s: "sug" },
-      { n: "Dinner: Narukiyo", e: "🍽️", d: "Yakitori, short walk from the hotel.", q: "Narukiyo, Shibuya, Tokyo", tag: "reserve", s: "sug" }
+      { n: "Shibuya Sky 17:30", e: "🌆", d: "Open-air rooftop deck 229 m up on Shibuya Scramble Square, looking down on the crossing. Cold. Closes in high wind.", q: "Shibuya Sky", tag: "reserve" },
+      { n: "Consider the sunset slot", e: "🌆", d: "Your 17:30 slot is after dark (sunset is around 16:30), so you'll see the city lit up. A slot around 16:00 catches sunset, and Mt. Fuji on a clear day. Craft says slots open one week ahead, so a switch may still be possible.", s: "sug" },
+      { n: "Dinner: Shibuya Sushi Jinnan (渋谷 鮨 神南) 20:00", e: "🍽️", d: "Sushi counter on the 9th floor of Vort Shibuya Briller, Jinnan 1-20-5 · 東京都渋谷区神南1-20-5 Vort渋谷 Briller 9F. About 10 min on foot from Shibuya Sky. Tel 03-6416-3220.", q: "東京都渋谷区神南1-20-5", tag: "booked" }
     ] },
 
-  { date: "2026-12-10", stay: "tokyo2", title: "Shinjuku Gyoen, Ghibli, Kichijoji",
+  { date: "2026-12-09", stay: "tokyo2", title: "Shinjuku Gyoen, Ghibli, Kichijoji",
     morning: [ { n: "Shinjuku Gyoen 10:00 to 11:30", e: "🌳", d: "Large garden mixing Japanese, English and French styles. Holds autumn color later than Kyoto. ¥500. Closed Mondays. Then the Chuo line west.", q: "Shinjuku Gyoen" } ],
     afternoon: [
       { n: "Quick lunch: Ramen Matsui", e: "🍽️", d: "By the Okido gate. Only if you're there by 11:30.", q: "RAMEN MATSUI, Yotsuya, Tokyo", s: "sug" },
       { n: "Inokashira Park", e: "🌳", d: "Park with a long pond and rowboats, on the walk from Kichijoji to the Ghibli Museum.", q: "Inokashira Park" },
-      { n: "Ghibli Museum 14:00", e: "🏛️", d: "Ticket is for Thu Dec 10. Ticket link only opens from inside Japan, so bookmark it from the email.", q: "Ghibli Museum, Mitaka", tag: "booked" }
+      { n: "Ghibli Museum 14:00", e: "🏛️", d: "Entry 14:00. Show the e-tickets and the reservation holder's passport at the entrance. Everyone in the group has to enter together. The ticket link only opens from inside Japan, so bookmark it from the email.", q: "Ghibli Museum, Mitaka", tag: "booked" }
     ],
     evening: [
-      { n: "Harmonica Yokocho", e: "🍸", d: "Postwar maze of about 100 tiny bars and counters by Kichijoji north exit. Good food, small plates.", q: "Harmonica Yokocho, Kichijoji" },
+      { n: "Dinner: Harmonica Yokocho", e: "🍽️", d: "Postwar maze of about 100 tiny bars and counters by Kichijoji north exit. Small plates.", q: "Harmonica Yokocho, Kichijoji", walkin: true },
       { n: "Nightcap in Shinjuku", e: "🍸", d: "On the way home: Golden Gai (Bar Darling) or Shinjuku Whisky Salon.", q: "Golden Gai, Shinjuku", s: "sug" }
     ] },
 
-  { date: "2026-12-09", stay: "tokyo2", title: "Meiji Jingu, Harajuku, Ginza",
+  { date: "2026-12-10", stay: "tokyo2", title: "Meiji Jingu, Harajuku, Ginza",
     morning: [
       { n: "Meiji Jingu", e: "⛩️", d: "Shinto shrine to Emperor Meiji, set in a forest of 100,000 trees in the middle of the city. Closes 16:00 in December. Free, about 1 hr. South entrance by Harajuku Station.", q: "Meiji Jingu" },
       { n: "Gaien ginkgo avenue", e: "🌳", d: "Avenue of 146 ginkgo trees that turn bright yellow in late autumn. May be past peak.", q: "Meiji Jingu Gaien Ginkgo Avenue" }
@@ -328,8 +337,7 @@ window.DAYS = [
     evening: [
       { n: "Ginza: Itoya, Ginza Loft, Morioka Shoten", e: "🛍️", d: "Itoya is a 12-floor stationery store. Ginza Loft is a lifestyle store. Morioka Shoten is a one-book-a-week bookshop. Itoya stays. Loft and Morioka Shoten are the first to drop.", q: "Itoya Ginza" },
       { n: "Dover Street Market + Atlantis Vintage", e: "🛍️", d: "A block or two from Itoya.", q: "Dover Street Market Ginza", s: "sug" },
-      { n: "Dinner in Ginza", e: "🍽️", q: "Ginza, Tokyo" },
-      { n: "Ginza dinner picks", e: "🍽️", d: "Ginza Katsukami (tonkatsu), Ushigoro S (yakiniku), Tempura Abe, Ginza Sen-ryo (sushi).", q: "Ginza Katsukami, 5-6-10 Ginza, Tokyo", tag: "reserve", s: "sug" },
+      { n: "Dinner: Sushi Eto (鮨 江藤) 18:30", e: "🍽️", d: "Omakase sushi counter in Ginza. Ginza 6-9-13, Nakajima Bldg 1F · 東京都中央区銀座6-9-13 中嶋ビル1F. Next door to Dover Street Market. Tel 03-6263-9321.", q: "東京都中央区銀座6-9-13", tag: "booked" },
       { n: "After: High Five", e: "🍸", d: "Classic cocktail bar.", q: "High Five bar, Ginza", s: "sug" }
     ] },
 
@@ -338,9 +346,11 @@ window.DAYS = [
     morning: [ { n: "Tsukiji outer market", e: "🍽️", d: "Street food and kitchen shops around the old fish market site. Tamagoyaki, grilled seafood, knives. Around 9:30.", q: "Tsukiji Outer Market" } ],
     afternoon: [
       { n: "Hama-rikyu garden", e: "🌳", d: "Former shogun's garden on Tokyo Bay, with a seawater tidal pond and a teahouse on the water. 10 min walk. Drop if the morning runs long.", q: "Hama-rikyu Gardens", tag: "optional" },
-      { n: "Or: Ginza Hachigou at 11:00", e: "🍽️", d: "Michelin Bib ramen, 10 min from Tsukiji. Book on TableCheck.", q: "Ginza Hachigou, 3-14-2 Ginza, Tokyo", s: "sug" }
+      { n: "Or: Ginza Hachigou at 11:00", e: "🍽️", d: "Michelin Bib ramen, 10 min from Tsukiji. Book on TableCheck.", q: "Ginza Hachigou, 3-14-2 Ginza, Tokyo", s: "sug" },
+      { n: "N'EX from Tokyo Station, about 12:15", e: "🚄", d: "About an hour to Narita." },
+      { n: "ZG 22 · Narita 16:00 → Vancouver 08:30", e: "✈️", d: "ZIPAIR. Lands in Vancouver the same calendar day, Fri Dec 11. Then YVR to SFO, landing 14:40. Plan to be at Narita by 14:00, and leave time for the tax refund desk.", tag: "booked" }
     ],
-    evening: [ { n: "Flight home", e: "✈️" } ] }
+    evening: [] }
 ];
 </script>
 <script>
@@ -351,7 +361,7 @@ window.PLACES=[{"n":"Flip up!2","c":"coffee","a":"Downtown (near hotel)","city":
   const STAYS = window.STAYS, DAYS = window.DAYS, PLACES = window.PLACES;
   const CATS = [["all","All"],["eat","Eat"],["drink","Drink"],["coffee","Coffee"],["shop","Shop"],["see","See"]];
   const CAT_LABEL = Object.fromEntries(CATS);
-  const TAG_LABEL = { booked: "Booked", reserve: "Book ahead", optional: "Optional" };
+  const TAG_LABEL = { booked: "Booked", reserve: "Book ahead", find: "Find a spot", decide: "Pick one", optional: "Optional" };
   const $ = s => document.querySelector(s);
   const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
   const maps = q => "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q);
@@ -376,7 +386,7 @@ window.PLACES=[{"n":"Flip up!2","c":"coffee","a":"Downtown (near hotel)","city":
   }
 
   function itemHTML(it) {
-    const tag = it.tag ? `<span class="tag ${it.tag}">${TAG_LABEL[it.tag]}</span>` : "";
+    const tag = (it.tag ? `<span class="tag ${it.tag}">${TAG_LABEL[it.tag]}</span>` : "") + (it.walkin ? `<span class="tag walkin">Walk-in</span>` : "");
     const go = it.q ? `<a class="go" href="${maps(it.q)}" target="_blank" rel="noopener">Map</a>` : "";
     const d = it.d || it.note;
     const sug = it.s === "sug";
@@ -476,13 +486,14 @@ window.PLACES=[{"n":"Flip up!2","c":"coffee","a":"Downtown (near hotel)","city":
   function toBook() {
     const out = [];
     DAYS.forEach(d => [["Morning", d.morning], ["Afternoon", d.afternoon], ["Evening", d.evening]].forEach(([tod, items]) =>
-      (items || []).forEach(it => { if (it.tag === "reserve") out.push({ ...it, date: d.date, tod }); })));
+      (items || []).forEach(it => { if (it.tag === "reserve" || it.tag === "find") out.push({ ...it, date: d.date, tod }); })));
     return out.sort((a, b) => a.date.localeCompare(b.date));
   }
   function renderBooking() {
     const all = toBook();
     if (!all.length) return `<div class="empty">Nothing left to book.</div>`;
-    const meals = all.filter(i => i.e === "🍽️"), events = all.filter(i => i.e !== "🍽️");
+    const find = all.filter(i => i.tag === "find"), booked = all.filter(i => i.tag === "reserve");
+    const meals = booked.filter(i => i.e === "🍽️"), events = booked.filter(i => i.e !== "🍽️");
     const row = it => {
       const f = fmtDate(it.date);
       const sug = it.s === "sug" ? `<div class="src sug">Suggested</div>` : "";
@@ -490,16 +501,13 @@ window.PLACES=[{"n":"Flip up!2","c":"coffee","a":"Downtown (near hotel)","city":
       return `<div class="item"><div class="item-main">${sug}<div class="item-name">${it.e ? `<span class="emo" aria-hidden="true">${it.e}</span>` : ""}${esc(it.n)}</div>${it.d ? `<div class="item-d">${esc(it.d)}</div>` : ""}<div class="bk-when">${new Date(it.date + "T12:00:00+09:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "Asia/Tokyo" })} · ${it.tod}</div></div>${go}</div>`;
     };
     const group = (title, list) => list.length ? `<section class="bk-group"><h2>${title} · ${list.length}</h2>${list.map(row).join("")}</section>` : "";
-    return `<div class="bk-intro">Everything tagged Book ahead that isn't booked yet.</div>` + group("Events", events) + group("Meals", meals);
+    return `<h2 class="bk-title">Needs booking</h2><div class="bk-intro">Everything tagged Book ahead that isn't booked yet, plus dinners still to find.</div>` + group("Events", events) + group("Meals", meals) + group("Dinners to find", find);
   }
 
   function render() {
     renderStays();
     const booking = state.stay === "booking";
-    const n = toBook().length;
-    const bt = $("#bookTab");
-    bt.setAttribute("aria-pressed", booking);
-    bt.innerHTML = `<b>Needs booking</b><span>${n ? n + " left" : "All done"}</span>`;
+    $("#bookTab").setAttribute("aria-pressed", booking);
     document.querySelector(".views").hidden = booking;
     document.querySelectorAll(".view").forEach(b => b.setAttribute("aria-pressed", b.dataset.view === state.view));
     $("#main").innerHTML = (booking ? renderBooking() : state.view === "plan" ? renderPlan() : renderNearby()) + `<div class="foot">Saved for offline use after first load.</div>`;
