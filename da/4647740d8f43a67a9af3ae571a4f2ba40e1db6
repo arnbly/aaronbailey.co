@@ -1,0 +1,19 @@
+public/japan/index.html
+  s_57a2d3eafd17ed::t_3d31181b649877 225,234
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "da4647740d8f43a67a9af3ae571a4f2ba40e1db6",
+  "prompts": {},
+  "sessions": {
+    "s_57a2d3eafd17ed": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "da2a4507-129b-490c-abf5-a3e433d4420a",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Aaron Bailey <aaronmatthewbailey@gmail.com>"
+    }
+  }
+}
